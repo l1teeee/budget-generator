@@ -10,16 +10,15 @@ function prefersReduced() {
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
+function hasFinePointer() {
+  return typeof window !== 'undefined'
+    && typeof window.matchMedia === 'function'
+    && window.matchMedia('(hover: hover) and (pointer: fine)').matches
+}
+
 export function useStepEntrance(scopeRef) {
   useGSAP(() => {
-    if (prefersReduced()) return
-    gsap.from('[data-animate]', {
-      y: 8,
-      opacity: 0,
-      duration: 0.26,
-      ease: 'power3.out',
-      stagger: 0.04,
-    })
+    gsap.set('[data-animate]', { clearProps: 'filter,opacity,transform' })
   }, { scope: scopeRef })
 }
 
@@ -35,8 +34,9 @@ export function useCountUp(ref, value, format) {
     const proxy = { v: prev.current }
     gsap.to(proxy, {
       v: value,
-      duration: 0.42,
+      duration: 0.22,
       ease: 'power2.out',
+      overwrite: true,
       onUpdate: () => {
         if (ref.current) ref.current.textContent = format(proxy.v)
       },
@@ -47,48 +47,62 @@ export function useCountUp(ref, value, format) {
 
 export function useProgressFill(ref, ratio) {
   useGSAP(() => {
+    if (!ref.current) return
     gsap.to(ref.current, {
-      scaleY: ratio,
-      duration: prefersReduced() ? 0 : 0.28,
-      ease: 'power3.inOut',
-      transformOrigin: 'top',
+      scaleX: ratio,
+      duration: prefersReduced() ? 0 : 0.2,
+      ease: 'power2.out',
+      transformOrigin: 'left',
+      overwrite: true,
     })
   }, { dependencies: [ratio], scope: ref })
 }
 
 export function usePreviewSwap(scopeRef, dep) {
   useGSAP(() => {
+    if (!scopeRef.current) return
     if (prefersReduced()) {
-      gsap.set(scopeRef.current, { opacity: 1, y: 0 })
+      gsap.set(scopeRef.current, { opacity: 1, clearProps: 'filter,transform' })
       return
     }
     gsap.fromTo(scopeRef.current,
-      { opacity: 0, y: 10 },
-      { opacity: 1, y: 0, duration: 0.24, ease: 'power3.out' }
+      { opacity: 0.96 },
+      {
+        opacity: 1,
+        duration: 0.16,
+        ease: 'power2.out',
+        overwrite: true,
+        clearProps: 'opacity',
+      }
     )
   }, { dependencies: [dep], scope: scopeRef })
 }
 
 export function usePDFButtonHover(btnRef, fillRef, labelRef) {
-  useGSAP((context, contextSafe) => {
-    if (!btnRef.current) return
-    gsap.set(fillRef.current, { scaleX: 0, transformOrigin: 'left' })
+  useGSAP(() => {
+    const btn = btnRef.current
+    const fill = fillRef.current
+    const label = labelRef.current
+    if (!btn || !fill || !label) return
 
-    const enter = contextSafe(() => {
-      gsap.to(fillRef.current, { scaleX: 1, duration: 0.2, ease: 'power3.inOut' })
-      gsap.to(labelRef.current, { color: '#061b3d', duration: 0.16, delay: 0.04 })
-    })
-    const leave = contextSafe(() => {
-      gsap.to(fillRef.current, { scaleX: 0, duration: 0.16, ease: 'power3.inOut' })
-      gsap.to(labelRef.current, { color: '#ffffff', duration: 0.14 })
-    })
+    gsap.set(fill, { scaleX: 0, transformOrigin: 'left' })
+    if (prefersReduced() || !hasFinePointer()) return
 
-    const el = btnRef.current
-    el.addEventListener('mouseenter', enter)
-    el.addEventListener('mouseleave', leave)
+    const enter = () => {
+      if (btn.disabled) return
+      gsap.to(btn, { y: -1, duration: 0.12, ease: 'power2.out', overwrite: true })
+    }
+    const leave = () => {
+      gsap.to(btn, { y: 0, duration: 0.12, ease: 'power2.out', overwrite: true })
+      gsap.set(label, { color: '#F1EFE9' })
+    }
+
+    btn.addEventListener('pointerenter', enter)
+    btn.addEventListener('pointerleave', leave)
     return () => {
-      el.removeEventListener('mouseenter', enter)
-      el.removeEventListener('mouseleave', leave)
+      btn.removeEventListener('pointerenter', enter)
+      btn.removeEventListener('pointerleave', leave)
+      gsap.killTweensOf([btn, fill, label])
     }
   }, { scope: btnRef })
 }

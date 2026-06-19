@@ -13,28 +13,30 @@ export default function TerminalField({
 }) {
   const [focused, setFocused] = useState(false)
 
-  const borderColor = error ? '#d98a8a' : focused ? '#061b3d' : '#d7e1ee'
-  const labelColor = error ? '#b4564f' : focused ? '#061b3d' : '#53627a'
+  const borderColor = error ? '#d98a8a' : focused ? '#16161D' : 'rgba(22,22,29,0.18)'
+  const labelColor = error ? '#b4564f' : focused ? '#16161D' : '#565563'
 
   return (
     <div data-animate style={{ marginBottom: '18px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '7px' }}>
         <span style={{
-            fontFamily: "'JetBrains Mono', monospace",
+            fontFamily: "'Hanken Grotesk', sans-serif",
             fontSize: '9px',
             letterSpacing: '0.14em',
             textTransform: 'uppercase',
             color: labelColor,
+            fontWeight: 800,
             transition: 'color 160ms ease',
         }}>
           {label}{required ? ' *' : ''}
         </span>
         {error && (
           <span style={{
-            fontFamily: "'JetBrains Mono', monospace",
+            fontFamily: "'Hanken Grotesk', sans-serif",
             fontSize: '9px',
             letterSpacing: '0.08em',
             color: '#b4564f',
+            fontWeight: 800,
           }}>
             required
           </span>
@@ -45,12 +47,12 @@ export default function TerminalField({
         display: 'flex',
         alignItems: textarea ? 'flex-start' : 'center',
         gap: '10px',
-        background: '#ffffff',
+        background: '#FCFBF8',
         border: `1.5px solid ${borderColor}`,
         borderRadius: textarea ? '14px' : '999px',
         padding: textarea ? '12px 16px' : '11px 16px',
-        transition: 'border-color 180ms ease, box-shadow 180ms ease, transform 160ms cubic-bezier(0.23, 1, 0.32, 1)',
-        boxShadow: focused ? '0 0 0 4px rgba(6,27,61,0.12), 0 12px 30px -26px rgba(2,8,23,0.45)' : '0 10px 24px -24px rgba(2,8,23,0.32)',
+        transition: 'border-color 180ms ease, background-color 180ms ease',
+        boxShadow: focused ? '0 0 0 4px rgba(174,194,255,0.32)' : 'none',
       }}>
         {textarea ? (
           <textarea
@@ -63,10 +65,10 @@ export default function TerminalField({
             style={{
               flex: 1,
               resize: 'none',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'inherit',
               fontSize: '14px',
               lineHeight: 1.6,
-              color: '#061124',
+              color: '#16161D',
             }}
           />
         ) : (
@@ -79,10 +81,11 @@ export default function TerminalField({
             placeholder={placeholder}
             style={{
               flex: 1,
-              fontFamily: mono ? "'JetBrains Mono', monospace" : "'Inter', sans-serif",
+              fontFamily: 'inherit',
               fontSize: '14px',
-              color: '#061124',
-              letterSpacing: mono ? '0.02em' : '0',
+              fontWeight: mono ? 700 : 500,
+              color: '#16161D',
+              letterSpacing: '0',
             }}
           />
         )}
@@ -92,7 +95,7 @@ export default function TerminalField({
             width: '7px',
             height: '15px',
             borderRadius: '2px',
-            background: '#061b3d',
+            background: '#16161D',
             animation: 'caret-blink 1.05s step-end infinite',
             flexShrink: 0,
           }} />

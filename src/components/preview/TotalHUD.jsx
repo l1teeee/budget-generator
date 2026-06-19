@@ -12,48 +12,12 @@ export default function TotalHUD() {
   useCountUp(ref, totals.total, format)
 
   return (
-    <div style={{
-      position: 'absolute',
-      left: '28px',
-      bottom: '24px',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '12px',
-      pointerEvents: 'none',
-      background: '#ffffff',
-      border: '1px solid rgba(255,255,255,0.54)',
-      borderRadius: '999px',
-      padding: '10px 18px',
-      boxShadow: '0 18px 34px -24px rgba(2,8,23,0.78)',
-    }}>
-      <span style={{
-        fontFamily: "'JetBrains Mono', monospace",
-        fontSize: '9px',
-        letterSpacing: '0.16em',
-        textTransform: 'uppercase',
-        color: '#53627a',
-      }}>
-        total
-      </span>
-      <span
-        ref={ref}
-        style={{
-          fontFamily: "'JetBrains Mono', monospace",
-          fontSize: '20px',
-          fontWeight: 500,
-          color: '#061b3d',
-          fontVariantNumeric: 'tabular-nums',
-          letterSpacing: '0.01em',
-        }}
-      >
+    <div className="total-hud">
+      <span className="total-hud-label">Total</span>
+      <span ref={ref} className="total-hud-value">
         {format(totals.total)}
       </span>
-      <span style={{
-        fontFamily: "'JetBrains Mono', monospace",
-        fontSize: '9px',
-        letterSpacing: '0.08em',
-        color: '#8795ad',
-      }}>
+      <span className="total-hud-count">
         {lineItems.length} item{lineItems.length === 1 ? '' : 's'}
       </span>
     </div>

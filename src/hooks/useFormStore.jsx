@@ -136,6 +136,10 @@ export function FormProvider({ children }) {
 
   const replaceQuote = (data) => setState(hydrate(makeDefaults(), data))
 
+  const applyQuoteDraft = (data) => {
+    setState(prev => hydrate(prev, data))
+  }
+
   const resetQuote = () => {
     setState(makeDefaults())
     setStep(1)
@@ -178,6 +182,7 @@ export function FormProvider({ children }) {
     removeCustomService,
     setTemplate,
     replaceQuote,
+    applyQuoteDraft,
     resetQuote,
     lineItems,
     totals,

@@ -52,13 +52,10 @@ export default function TemplatePreview({ previewRef }) {
     >
       <div
         ref={swapRef}
+        className="preview-document"
         style={{
           width: `${A4_W * scale}px`,
           height: `${A4_H * scale}px`,
-          borderRadius: '16px',
-          overflow: 'hidden',
-          border: '1px solid rgba(255,255,255,0.22)',
-          boxShadow: '0 34px 70px -28px rgba(2,8,23,0.7), 0 10px 24px -16px rgba(2,8,23,0.42)',
         }}
       >
         <div style={{

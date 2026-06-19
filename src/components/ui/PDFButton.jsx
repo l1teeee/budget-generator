@@ -2,10 +2,13 @@ import { useRef } from 'react'
 import { useFormStore } from '../../hooks/useFormStore'
 import { usePDFExport } from '../../hooks/usePDFExport'
 import { usePDFButtonHover } from '../../hooks/useAnimations'
+import { getQuoteCompleteness } from '../../lib/quoteCompleteness'
 
 export default function PDFButton({ previewRef }) {
   const { state } = useFormStore()
   const { exportPDF, exporting } = usePDFExport()
+  const completeness = getQuoteCompleteness(state)
+  const blocked = !completeness.complete
   const btnRef = useRef(null)
   const fillRef = useRef(null)
   const labelRef = useRef(null)
@@ -15,17 +18,17 @@ export default function PDFButton({ previewRef }) {
     <button
       ref={btnRef}
       onClick={() => exportPDF(previewRef, state.client.name)}
-      disabled={exporting}
+      disabled={exporting || blocked}
       style={{
         position: 'relative',
         overflow: 'hidden',
-        cursor: exporting ? 'wait' : 'pointer',
-        border: '1px solid #061b3d',
+        cursor: exporting ? 'wait' : blocked ? 'not-allowed' : 'pointer',
+        border: '1.5px solid #16161D',
         borderRadius: '999px',
-        background: '#061b3d',
+        background: blocked ? '#E9E6DE' : '#16161D',
         padding: '15px 24px',
         width: '100%',
-        boxShadow: '0 16px 34px -24px rgba(2,8,23,0.76)',
+        opacity: blocked ? 0.72 : 1,
       }}
     >
       <span
@@ -33,7 +36,7 @@ export default function PDFButton({ previewRef }) {
         style={{
           position: 'absolute',
           inset: 0,
-          background: '#ffffff',
+          background: '#AEC2FF',
           transform: 'scaleX(0)',
           transformOrigin: 'left',
           pointerEvents: 'none',
@@ -43,14 +46,14 @@ export default function PDFButton({ previewRef }) {
         ref={labelRef}
         style={{
           position: 'relative',
-          fontFamily: "'JetBrains Mono', monospace",
           fontSize: '12px',
+          fontWeight: 800,
           letterSpacing: '0.12em',
           textTransform: 'uppercase',
-          color: '#ffffff',
+          color: blocked ? '#565563' : '#F1EFE9',
         }}
       >
-        {exporting ? 'rendering...' : 'export pdf'}
+        {exporting ? 'rendering...' : blocked ? 'complete required fields' : 'export pdf'}
       </span>
     </button>
   )

@@ -1,4 +1,4 @@
-export default function ReactMark({ size = 22, color = '#061b3d' }) {
+export default function ReactMark({ size = 22, color = '#16161D' }) {
   return (
     <svg width={size} height={size} viewBox="-11.5 -10.23 23 20.46" fill="none" aria-hidden>
       <circle cx="0" cy="0" r="2.05" fill={color} />

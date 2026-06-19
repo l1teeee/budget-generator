@@ -1,181 +1,161 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import { scrollToLandingSection, useHomeAnimations } from '../../hooks/useHomeAnimations'
 
-const LEDGER = [
-  ['Rent & Location', '$1,200'],
-  ['Equipment', '$3,800'],
-  ['Marketing', '$750'],
-  ['Staff', '$2,400'],
-  ['Emergency Fund', '$900'],
+const MOCK_FIELDS = [
+  ['Client', 'John Carter'],
+  ['Project', 'Landing Page'],
+  ['Services', '3'],
+  ['Total', '$2,700'],
+  ['Template', 'Ledger'],
+  ['Status', 'Ready'],
 ]
 
-const INFO = [
-  {
-    idx: '01',
-    title: 'How it works',
-    sub: 'Client, project, services, export — four guided steps.',
-    body: 'Fill in the client and project details, add your services with quantities and rates, apply discount or tax, then export. Your draft is saved locally as you type, so you can pick it up later.',
-  },
-  {
-    idx: '02',
-    title: 'Two document templates',
-    sub: 'A tabular ledger or an editorial statement.',
-    body: 'Ledger lays your figures out as a clean financial sheet. Statement is a typographic, black-band quote. Pick either at the export step — both render pixel-for-pixel into the PDF.',
-  },
-  {
-    idx: '03',
-    title: 'Export PDF & JSON',
-    sub: 'Print-ready file, or structured data to reuse.',
-    body: 'Download a polished, 1:1 PDF for the client, or export the quote as JSON to re-import, version, or pipe into another system. No spreadsheet setup, no formulas.',
-  },
-  {
-    idx: '04',
-    title: 'Numen Agency',
-    sub: 'Built in-house at delta-numen.com.',
-    body: 'This generator is an internal Numen tool, fully editable to your own brand — name, tagline, contact and quote ID all live in the brand drawer. Reach us at delta-numen.com.',
-  },
+const MOCK_LINES = [
+  ['Design', '$500'],
+  ['Landing Page', '$800'],
+  ['AI Integration', '$1,500'],
 ]
 
-function InfoRow({ item, open, onToggle }) {
-  const buttonId = `home-info-button-${item.idx}`
-  const panelId = `home-info-panel-${item.idx}`
-
-  return (
-    <div className="link-cell" style={{ borderBottom: '1px solid var(--line)' }}>
-      <button
-        type="button"
-        className="link-row"
-        id={buttonId}
-        aria-expanded={open}
-        aria-controls={panelId}
-        onClick={onToggle}
-        style={{ borderBottom: 'none' }}
-      >
-        <span className="link-idx">{item.idx}</span>
-        <span className="link-main">
-          <span className="link-title">{item.title}</span>
-          <span className="link-sub">{item.sub}</span>
-        </span>
-        <svg
-          className="link-arr"
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="none"
-          aria-hidden="true"
-          style={{ transform: open ? 'rotate(90deg)' : 'none' }}
-        >
-          <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
-      <div
-        id={panelId}
-        className="link-panel"
-        role="region"
-        aria-labelledby={buttonId}
-        aria-hidden={!open}
-        style={{
-          gridTemplateRows: open ? '1fr' : '0fr',
-        }}
-      >
-        <div className="link-panel-inner">
-          <p
-            style={{
-              margin: 0,
-              padding: '0 4px 20px 46px',
-              fontSize: '14.5px',
-              lineHeight: 1.6,
-              color: 'var(--muted)',
-              maxWidth: '52ch',
-            }}
-          >
-            {item.body}
-          </p>
-        </div>
-      </div>
-    </div>
-  )
-}
+const STEPS = [
+  { n: '1', name: 'Client', status: 'Add details' },
+  { n: '2', name: 'Project', status: 'Scope it' },
+  { n: '3', name: 'Services', status: 'Price it' },
+  { n: '4', name: 'Export', status: 'PDF / JSON' },
+]
 
 export default function HomePage({ onStart }) {
-  const ref = useRef(null)
-  const [openIdx, setOpenIdx] = useState(-1)
+  const root = useRef(null)
+  useHomeAnimations(root)
 
   useEffect(() => {
-    const node = ref.current
-    if (!node) return
-    const id = requestAnimationFrame(() => node.classList.add('is-in'))
-    return () => cancelAnimationFrame(id)
+    document.body.classList.add('lk-active')
+    return () => document.body.classList.remove('lk-active')
   }, [])
 
+  const scrollTo = (id) => () => {
+    scrollToLandingSection(id)
+  }
+
   return (
-    <div className="home" ref={ref}>
-      <div className="home-col">
-        <header className="home-mast reveal">
-          <div className="home-word">
-            <b>BudgetFlow</b>
-            <span className="home-tag">AI</span>
-          </div>
-          <span className="home-est">Numen · Est. 2026</span>
-        </header>
-
-        <section className="home-hero reveal">
-          <h1 className="home-h1">
-            Create accurate budgets in minutes, <em>not hours.</em>
-          </h1>
-          <p className="home-lede">
-            Describe a project and turn it into a clean, editable quote — categories,
-            estimates, totals and an export-ready document.
-          </p>
-        </section>
-
-        <div className="home-cta reveal">
-          <button type="button" className="btn btn-primary" onClick={onStart}>
-            Start your budget
-            <span className="arr" aria-hidden="true">→</span>
+    <div className="lk" ref={root}>
+      {/* ============ NAVBAR ============ */}
+      <header className="lk-nav-wrap">
+        <nav className="lk-nav">
+          <button type="button" className="lk-logo" onClick={scrollTo('top')}>
+            BudgetFlow AI
           </button>
-          <p className="home-note">
-            No account, no spreadsheet setup.<br />
-            Your draft saves automatically as you go.
+          <div className="lk-nav-links">
+            <button type="button" className="lk-nav-link" onClick={scrollTo('create')}>Create</button>
+            <button type="button" className="lk-nav-link" onClick={scrollTo('import-json')}>Import JSON</button>
+            <button type="button" className="lk-nav-link" onClick={scrollTo('preview')}>Preview</button>
+            <button type="button" className="lk-nav-link" onClick={scrollTo('export')}>Export</button>
+          </div>
+          <div className="lk-nav-actions">
+            <button type="button" className="lk-btn lk-btn-ghost lk-nav-json" onClick={onStart}>JSON</button>
+            <button type="button" className="lk-btn lk-btn-primary lk-nav-start" onClick={onStart}>Start</button>
+          </div>
+        </nav>
+      </header>
+
+      {/* ============ HERO ============ */}
+      <section className="lk-hero" id="top">
+        <div className="lk-hero-inner">
+          <p className="lk-eyebrow">Budget generator</p>
+          <h1 className="lk-h1">Start your budget in seconds.</h1>
+          <p className="lk-sub">
+            Create a clean quote, preview it live, and export it as PDF or JSON.
           </p>
+          <div className="lk-cta-row" id="import-json">
+            <button type="button" className="lk-btn lk-btn-primary lk-btn-hero" onClick={onStart}>
+              Start your budget
+            </button>
+            <button type="button" className="lk-btn lk-btn-ghost lk-btn-lg" onClick={onStart}>
+              Import JSON
+            </button>
+          </div>
+          <p className="lk-microcopy">No account. No backend. Local-first.</p>
         </div>
 
-        <section className="ledger reveal" aria-label="Example generated budget">
-          <div className="ledger-head">
-            <b>Coffee Shop Launch</b>
-            <span>Draft</span>
+        {/* ---- hero mockup ---- */}
+        <div className="lk-mock" aria-label="Example budget document">
+          <div className="lk-mock-head">
+            <span className="lk-mock-title">Coffee Shop Launch</span>
+            <span className="lk-mock-badge">Ready</span>
           </div>
-          <div className="ledger-body">
-            {LEDGER.map(([name, amount]) => (
-              <div className="ledger-row" key={name}>
+          <div className="lk-mock-fields">
+            {MOCK_FIELDS.map(([label, value]) => (
+              <div className="lk-mock-field" key={label}>
+                <span className="lk-mock-label">{label}</span>
+                <span className="lk-mock-value">{value}</span>
+              </div>
+            ))}
+          </div>
+          <div className="lk-mock-table">
+            {MOCK_LINES.map(([name, amount]) => (
+              <div className="lk-mock-line" key={name}>
                 <span>{name}</span>
                 <span>{amount}</span>
               </div>
             ))}
-            <div className="ledger-total">
-              <span className="lbl">Estimated total</span>
-              <span className="val">$9,050</span>
-            </div>
           </div>
-        </section>
+          <div className="lk-mock-foot">Export PDF</div>
+        </div>
+      </section>
 
-        <section className="home-links reveal" aria-label="About this tool">
-          {INFO.map((item, i) => (
-            <InfoRow
-              key={item.idx}
-              item={item}
-              open={openIdx === i}
-              onToggle={() => setOpenIdx((cur) => (cur === i ? -1 : i))}
-            />
+      {/* ============ LIVE CREATION FLOW ============ */}
+      <section className="lk-steps js-reveal" id="create">
+        <div className="lk-steps-head">
+          <h2 className="lk-h2">Four steps. One clean budget.</h2>
+          <p className="lk-steps-sub">Fill it, preview it, export it.</p>
+        </div>
+        <div className="lk-steps-row">
+          {STEPS.map((s) => (
+            <div className="lk-step" key={s.n}>
+              <span className="lk-step-n">{s.n}</span>
+              <span className="lk-step-name">{s.name}</span>
+              <span className="lk-step-status">{s.status}</span>
+            </div>
           ))}
-        </section>
+        </div>
+      </section>
 
-        <footer className="home-foot reveal">
-          <span>© 2026 BudgetFlow · Numen Agency</span>
-          <a href="https://delta-numen.com" target="_blank" rel="noreferrer">
-            delta-numen.com
-          </a>
-        </footer>
-      </div>
+      {/* ============ PREVIEW + EXPORT (dark) ============ */}
+      <section className="lk-preview js-reveal" id="preview">
+        <div className="lk-preview-inner">
+          <h2 className="lk-h2 lk-h2--light">Preview live. Export clean.</h2>
+          <p className="lk-preview-sub">Your A4 document updates as you build.</p>
+          <div className="lk-cta-row lk-cta-row--center" id="export">
+            <button type="button" className="lk-btn lk-btn-primary lk-btn-lg" onClick={onStart}>
+              Create budget
+            </button>
+            <button type="button" className="lk-btn lk-btn-ghost-light lk-btn-lg" onClick={onStart}>
+              Open JSON panel
+            </button>
+          </div>
+          <div className="lk-templates">
+            <div className="lk-template">Ledger</div>
+            <div className="lk-template">Statement</div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ FINAL CTA (green) ============ */}
+      <section className="lk-final js-reveal">
+        <h2 className="lk-h2 lk-final-title">Ready to create your budget?</h2>
+        <button type="button" className="lk-btn lk-btn-primary lk-btn-hero" onClick={onStart}>
+          Start your budget
+        </button>
+        <p className="lk-final-note">PDF and JSON export included.</p>
+      </section>
+
+      {/* ============ FOOTER ============ */}
+      <footer className="lk-foot">
+        <span className="lk-foot-brand">BudgetFlow AI</span>
+        <span className="lk-foot-sep">·</span>
+        <span>Numen Agency</span>
+        <span className="lk-foot-sep">·</span>
+        <a href="https://delta-numen.com" target="_blank" rel="noreferrer">delta-numen.com</a>
+      </footer>
     </div>
   )
 }

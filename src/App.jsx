@@ -10,6 +10,13 @@ import FormStep4 from './components/form/FormStep4'
 import TemplatePreview from './components/preview/TemplatePreview'
 import JsonPanel from './components/form/JsonPanel'
 import BrandDrawer from './components/form/BrandDrawer'
+import StartModeSelector from './components/intake/StartModeSelector'
+import JsonIntake from './components/intake/JsonIntake'
+import ContextIntake from './components/intake/ContextIntake'
+import IntakeReview from './components/intake/IntakeReview'
+import MissingQuestionsPanel from './components/intake/MissingQuestionsPanel'
+import { getQuoteCompleteness } from './lib/quoteCompleteness'
+import { mergeQuoteDraft } from './lib/intakeMapper'
 
 function Shell({ onHome }) {
   const { step } = useFormStore()
@@ -28,18 +35,26 @@ function Shell({ onHome }) {
     <div className="app-shell">
       <StatusBar onHome={onHome} onOpenBrand={() => setBrandOpen(true)} onOpenJson={() => setJsonOpen(true)} />
 
-      <div className="app-main">
-        <StepProgress />
+      <main className="app-main">
+        <section className="workflow-column" aria-label="Budget wizard">
+          <StepProgress />
 
-        <div
-          key={step}
-          className="editor-panel scroll-thin"
-        >
-          {steps[step]}
-        </div>
+          <div
+            key={step}
+            className="editor-panel scroll-thin"
+          >
+            <MissingQuestionsPanel />
+            {steps[step]}
+          </div>
+        </section>
 
-        <TemplatePreview previewRef={previewRef} />
-      </div>
+        <aside className="preview-panel" aria-label="Live budget preview">
+          <div className="preview-panel-head">
+            <strong>Preview</strong>
+          </div>
+          <TemplatePreview previewRef={previewRef} />
+        </aside>
+      </main>
 
       {jsonOpen && <JsonPanel open onClose={() => setJsonOpen(false)} />}
       {brandOpen && <BrandDrawer open onClose={() => setBrandOpen(false)} />}
@@ -47,16 +62,97 @@ function Shell({ onHome }) {
   )
 }
 
-export default function App() {
-  const [view, setView] = useState('home')
+function IntakeFlow({ onHome, onWizard }) {
+  const { state, applyQuoteDraft, setStep } = useFormStore()
+  const [screen, setScreen] = useState('choose')
+  const [review, setReview] = useState(null)
+  const [mode, setMode] = useState(null)
 
-  if (view === 'home') {
-    return <HomePage onStart={() => setView('generator')} />
+  const openWizardAt = (quote) => {
+    const completeness = getQuoteCompleteness(quote)
+    setStep(completeness.firstIncompleteStep?.number || 4)
+    onWizard()
+  }
+
+  const applyReview = () => {
+    if (!review) return
+    const merged = mergeQuoteDraft(state, review.mappedData)
+    applyQuoteDraft(review.mappedData)
+    openWizardAt(merged)
+  }
+
+  if (screen === 'json') {
+    return (
+      <JsonIntake
+        currentQuote={state}
+        onBack={() => setScreen('choose')}
+        onAnalyzed={(result, nextMode) => {
+          setReview(result)
+          setMode(nextMode)
+          setScreen('review')
+        }}
+      />
+    )
+  }
+
+  if (screen === 'context') {
+    return (
+      <ContextIntake
+        currentQuote={state}
+        onBack={() => setScreen('choose')}
+        onAnalyzed={(result, nextMode) => {
+          setReview(result)
+          setMode(nextMode)
+          setScreen('review')
+        }}
+      />
+    )
+  }
+
+  if (screen === 'review') {
+    return (
+      <IntakeReview
+        result={review}
+        mode={mode}
+        onBack={() => setScreen(mode || 'choose')}
+        onApply={applyReview}
+      />
+    )
   }
 
   return (
+    <StartModeSelector
+      onHome={onHome}
+      onManual={() => {
+        setStep(1)
+        onWizard()
+      }}
+      onJson={() => setScreen('json')}
+      onContext={() => setScreen('context')}
+    />
+  )
+}
+
+function AppContent() {
+  const [view, setView] = useState('home')
+
+  if (view === 'home') {
+    return <HomePage onStart={() => setView('intake')} />
+  }
+
+  if (view === 'intake') {
+    return <IntakeFlow onHome={() => setView('home')} onWizard={() => setView('wizard')} />
+  }
+
+  return (
+    <Shell onHome={() => setView('home')} />
+  )
+}
+
+export default function App() {
+  return (
     <FormProvider>
-      <Shell onHome={() => setView('home')} />
+      <AppContent />
     </FormProvider>
   )
 }

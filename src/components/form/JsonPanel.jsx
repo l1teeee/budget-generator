@@ -1,35 +1,42 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useFormStore } from '../../hooks/useFormStore'
 import { quoteToJsonString, parseQuoteJson, formatJsonString, downloadJson } from '../../lib/quoteJson'
+import { getQuoteCompleteness } from '../../lib/quoteCompleteness'
 
 function PanelButton({ onClick, children, solid = false }) {
   return (
     <button
       onClick={onClick}
       style={{
-        fontFamily: "'JetBrains Mono', monospace",
+        fontFamily: "'Hanken Grotesk', sans-serif",
+        fontWeight: 800,
         fontSize: '11px',
         letterSpacing: '0.06em',
         textTransform: 'uppercase',
         padding: '9px 14px',
         borderRadius: '999px',
-        color: solid ? '#ffffff' : '#061b3d',
-        background: solid ? '#061b3d' : '#ffffff',
-        border: `1px solid ${solid ? 'transparent' : '#d7e1ee'}`,
-        boxShadow: solid ? '0 12px 28px -22px rgba(2,8,23,0.72)' : '0 10px 24px -24px rgba(2,8,23,0.34)',
+        color: solid ? '#F1EFE9' : '#16161D',
+        background: solid ? '#16161D' : '#FCFBF8',
+        border: `1.5px solid ${solid ? '#16161D' : 'rgba(22,22,29,0.22)'}`,
       }}
       onMouseEnter={e => {
-        if (solid) e.currentTarget.style.background = '#0b2a5b'
+        if (solid) {
+          e.currentTarget.style.background = '#AEC2FF'
+          e.currentTarget.style.color = '#16161D'
+        }
         else {
-          e.currentTarget.style.background = '#f7fbff'
-          e.currentTarget.style.borderColor = '#aebed2'
+          e.currentTarget.style.background = '#F6F4EE'
+          e.currentTarget.style.borderColor = '#16161D'
         }
       }}
       onMouseLeave={e => {
-        if (solid) e.currentTarget.style.background = '#061b3d'
+        if (solid) {
+          e.currentTarget.style.background = '#16161D'
+          e.currentTarget.style.color = '#F1EFE9'
+        }
         else {
-          e.currentTarget.style.background = '#ffffff'
-          e.currentTarget.style.borderColor = '#d7e1ee'
+          e.currentTarget.style.background = '#FCFBF8'
+          e.currentTarget.style.borderColor = 'rgba(22,22,29,0.22)'
         }
       }}
     >
@@ -39,9 +46,21 @@ function PanelButton({ onClick, children, solid = false }) {
 }
 
 export default function JsonPanel({ open, onClose }) {
-  const { state, replaceQuote } = useFormStore()
+  const { state, replaceQuote, setStep } = useFormStore()
   const [text, setText] = useState(() => quoteToJsonString(state))
   const [status, setStatus] = useState(null)
+  const preview = useMemo(() => {
+    const parsed = parseQuoteJson(text)
+    if (!parsed.ok) return { ok: false, message: parsed.error }
+    const completeness = getQuoteCompleteness(parsed.data)
+    return {
+      ok: true,
+      message: completeness.complete
+        ? 'Ready to export after import'
+        : `${completeness.missingFields.length} required field${completeness.missingFields.length === 1 ? '' : 's'} still missing`,
+      completeness,
+    }
+  }, [text])
 
   if (!open) return null
 
@@ -55,7 +74,12 @@ export default function JsonPanel({ open, onClose }) {
 
   const onImport = () => {
     const r = parseQuoteJson(text)
-    if (r.ok) { replaceQuote(r.data); flash('ok', 'imported into editor') }
+    if (r.ok) {
+      const completeness = getQuoteCompleteness(r.data)
+      replaceQuote(r.data)
+      setStep(completeness.firstIncompleteStep?.number || 4)
+      flash('ok', 'imported into editor')
+    }
     else flash('err', r.error)
   }
 
@@ -86,8 +110,7 @@ export default function JsonPanel({ open, onClose }) {
         position: 'fixed',
         inset: 0,
         zIndex: 100,
-        background: 'rgba(2,8,23,0.72)',
-        backdropFilter: 'blur(6px)',
+        background: 'rgba(22,22,29,0.46)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -102,21 +125,20 @@ export default function JsonPanel({ open, onClose }) {
           maxHeight: '100%',
           display: 'flex',
           flexDirection: 'column',
-          background: '#ffffff',
-          border: '1px solid #d7e1ee',
-          borderRadius: '8px',
+          background: '#FCFBF8',
+          border: '1.5px solid #16161D',
+          borderRadius: '16px',
           overflow: 'hidden',
-          boxShadow: '0 28px 70px -24px rgba(2,8,23,0.68)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid #d7e1ee' }}>
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#061124' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid rgba(22,22,29,0.16)' }}>
+          <span style={{ fontFamily: "'Hanken Grotesk', sans-serif", fontSize: '11px', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#16161D' }}>
             {'{ }'} quote.json
           </span>
           <button
             aria-label="Close JSON panel"
             onClick={onClose}
-            style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '18px', color: '#53627a', lineHeight: 1, width: '28px', height: '28px', borderRadius: '999px' }}
+            style={{ fontFamily: "'Hanken Grotesk', sans-serif", fontSize: '18px', color: '#565563', lineHeight: 1, width: '28px', height: '28px', borderRadius: '999px' }}
           >
             x
           </button>
@@ -136,30 +158,51 @@ export default function JsonPanel({ open, onClose }) {
             fontFamily: "'JetBrains Mono', monospace",
             fontSize: '12px',
             lineHeight: 1.65,
-            color: '#061124',
-            background: '#f7fbff',
-            border: '1px solid #dce6f4',
-            borderRadius: '8px',
+            color: '#16161D',
+            background: '#F6F4EE',
+            border: '1.5px solid rgba(22,22,29,0.18)',
+            borderRadius: '12px',
           }}
         />
+
+        <div style={{
+          margin: '0 20px 14px',
+          padding: '12px 14px',
+          background: preview.ok ? '#EAEEFB' : '#fff1f3',
+          border: `1.5px solid ${preview.ok ? 'rgba(22,22,29,0.14)' : '#f1c9d0'}`,
+          borderRadius: '14px',
+          color: preview.ok ? '#16161D' : '#b4564f',
+          fontSize: '13px',
+          fontWeight: 700,
+        }}>
+          {preview.message}
+        </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0 20px 18px', flexWrap: 'wrap' }}>
           <PanelButton onClick={onFormat}>format</PanelButton>
           <PanelButton onClick={onCopy}>copy</PanelButton>
           <label style={{ display: 'inline-flex' }}>
             <span
+              onMouseEnter={e => {
+                e.currentTarget.style.background = '#F6F4EE'
+                e.currentTarget.style.borderColor = '#16161D'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = '#FCFBF8'
+                e.currentTarget.style.borderColor = 'rgba(22,22,29,0.22)'
+              }}
               style={{
                 cursor: 'pointer',
-                fontFamily: "'JetBrains Mono', monospace",
+                fontFamily: "'Hanken Grotesk', sans-serif",
+                fontWeight: 800,
                 fontSize: '11px',
                 letterSpacing: '0.06em',
                 textTransform: 'uppercase',
                 padding: '9px 14px',
                 borderRadius: '999px',
-                color: '#061b3d',
-                background: '#ffffff',
-                border: '1px solid #d7e1ee',
-                boxShadow: '0 10px 24px -24px rgba(2,8,23,0.34)',
+                color: '#16161D',
+                background: '#FCFBF8',
+                border: '1.5px solid rgba(22,22,29,0.22)',
               }}
             >
               load file
@@ -170,10 +213,12 @@ export default function JsonPanel({ open, onClose }) {
           <div style={{ flex: 1 }} />
           {status && (
             <span style={{
-              fontFamily: "'JetBrains Mono', monospace",
+              fontFamily: "'Hanken Grotesk', sans-serif",
+              fontWeight: 800,
               fontSize: '10px',
               letterSpacing: '0.05em',
-              color: status.kind === 'ok' ? '#061b3d' : '#b4564f',
+              textTransform: 'uppercase',
+              color: status.kind === 'ok' ? '#16161D' : '#b4564f',
             }}>
               {status.msg}
             </span>

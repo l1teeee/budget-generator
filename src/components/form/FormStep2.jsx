@@ -37,16 +37,16 @@ export default function FormStep2() {
 
         <div data-animate style={{ marginBottom: '20px' }}>
           <div style={{
-            fontFamily: "'JetBrains Mono', monospace",
             fontSize: '9px',
+            fontWeight: 800,
             letterSpacing: '0.14em',
             textTransform: 'uppercase',
-            color: '#53627a',
+            color: '#565563',
             marginBottom: '10px',
           }}>
             Currency
           </div>
-          <div style={{ display: 'flex', gap: '6px', width: 'fit-content', background: '#ffffff', border: '1px solid #d7e1ee', borderRadius: '999px', padding: '4px', boxShadow: '0 12px 26px -24px rgba(2,8,23,0.45)' }}>
+          <div style={{ display: 'flex', gap: '6px', width: 'fit-content', background: '#FCFBF8', border: '1.5px solid rgba(22,22,29,0.18)', borderRadius: '999px', padding: '4px' }}>
             {CURRENCIES.map((code) => {
               const active = p.currency === code
               return (
@@ -55,14 +55,13 @@ export default function FormStep2() {
                   onClick={() => update('project.currency', code)}
                   style={{
                     cursor: 'pointer',
-                    fontFamily: "'JetBrains Mono', monospace",
                     fontSize: '11px',
+                    fontWeight: 800,
                     letterSpacing: '0.06em',
                     padding: '8px 16px',
                     borderRadius: '999px',
-                    color: active ? '#ffffff' : '#53627a',
-                    background: active ? '#061b3d' : 'transparent',
-                    boxShadow: active ? '0 10px 22px -18px rgba(2,8,23,0.7)' : 'none',
+                    color: active ? '#AEC2FF' : '#565563',
+                    background: active ? '#16161D' : 'transparent',
                   }}
                 >
                   {code}

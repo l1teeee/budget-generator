@@ -10,15 +10,14 @@ export default function CustomServiceRow({ service, symbol }) {
       gap: '10px',
       padding: '9px 12px',
       marginBottom: '6px',
-      border: '1px dashed #bdcbe0',
-      background: '#ffffff',
-      borderRadius: '12px',
-      boxShadow: '0 10px 24px -24px rgba(2,8,23,0.34)',
+      border: '1.5px dashed rgba(22,22,29,0.28)',
+      background: '#FCFBF8',
+      borderRadius: '16px',
     }}>
       <span style={{
-        fontFamily: "'JetBrains Mono', monospace",
         fontSize: '13px',
-        color: '#061b3d',
+        fontWeight: 800,
+        color: '#16161D',
         width: '20px',
         flexShrink: 0,
         textAlign: 'center',
@@ -32,9 +31,8 @@ export default function CustomServiceRow({ service, symbol }) {
         style={{
           flex: 1,
           minWidth: 0,
-          fontFamily: "'Inter', sans-serif",
           fontSize: '13px',
-          color: '#061124',
+          color: '#16161D',
         }}
       />
       <input
@@ -47,11 +45,11 @@ export default function CustomServiceRow({ service, symbol }) {
         style={{
           width: '40px',
           textAlign: 'center',
-          fontFamily: "'JetBrains Mono', monospace",
           fontSize: '12px',
-          color: '#061b3d',
-          background: '#f7fbff',
-          border: '1px solid #dce6f4',
+          fontWeight: 800,
+          color: '#16161D',
+          background: '#F6F4EE',
+          border: '1px solid rgba(22,22,29,0.18)',
           borderRadius: '8px',
           padding: '4px 0',
         }}
@@ -62,12 +60,12 @@ export default function CustomServiceRow({ service, symbol }) {
         gap: '3px',
         width: '76px',
         justifyContent: 'flex-end',
-        background: '#f7fbff',
-        border: '1px solid #dce6f4',
+        background: '#F6F4EE',
+        border: '1px solid rgba(22,22,29,0.18)',
         borderRadius: '8px',
         padding: '4px 8px',
       }}>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: '#8795ad' }}>{symbol}</span>
+        <span style={{ fontSize: '12px', fontWeight: 800, color: '#8A8794' }}>{symbol}</span>
         <input
           type="number"
           min="0"
@@ -77,9 +75,9 @@ export default function CustomServiceRow({ service, symbol }) {
           style={{
             width: '48px',
             textAlign: 'right',
-            fontFamily: "'JetBrains Mono', monospace",
             fontSize: '12px',
-            color: '#061124',
+            fontWeight: 800,
+            color: '#16161D',
             fontVariantNumeric: 'tabular-nums',
           }}
         />
