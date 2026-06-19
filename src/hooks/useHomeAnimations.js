@@ -62,13 +62,90 @@ export function useHomeAnimations(scopeRef) {
 
     const reduceMotion = prefersReduced()
     const cleanup = []
+    let heroTimeline
+    const navWrap = gsap.utils.toArray('.lk-nav-wrap', root)
+    const eyebrow = gsap.utils.toArray('.lk-eyebrow', root)
+    const h1 = gsap.utils.toArray('.lk-h1', root)
+    const sub = gsap.utils.toArray('.lk-sub', root)
+    const ctaRow = gsap.utils.toArray('.lk-hero .lk-cta-row', root)
+    const microcopy = gsap.utils.toArray('.lk-microcopy', root)
+    const mock = gsap.utils.toArray('.lk-mock', root)
+    const [heroPanel] = gsap.utils.toArray('.lk-hero', root)
+    const heroTextTargets = [
+      ...navWrap,
+      ...eyebrow,
+      ...h1,
+      ...sub,
+      ...ctaRow,
+      ...microcopy,
+    ]
+    const heroTargets = [...heroTextTargets, ...mock]
     const revealSections = gsap.utils.toArray('.js-reveal', root)
     const stepCards = gsap.utils.toArray('.lk-step', root)
 
     if (reduceMotion) {
+      gsap.set('.lk-hero', { clearProps: 'all' })
+      gsap.set(heroTargets, { clearProps: 'all' })
       gsap.set(revealSections, { clearProps: 'all' })
       gsap.set(stepCards, { clearProps: 'all' })
       return
+    }
+
+    if (heroTargets.length) {
+      gsap.set(heroTargets, {
+        autoAlpha: 0,
+        y: 18,
+        filter: 'blur(8px)',
+        willChange: 'transform, opacity, filter',
+      })
+      if (mock.length) {
+        gsap.set(mock, { y: 24 })
+      }
+      gsap.set(heroPanel, {
+        autoAlpha: 0,
+        scale: 0.985,
+        filter: 'blur(6px)',
+        transformOrigin: 'center',
+        willChange: 'transform, opacity, filter',
+      })
+
+      heroTimeline = gsap.timeline({
+        defaults: {
+          duration: 0.45,
+          ease: 'power3.out',
+        },
+        onComplete: () => {
+          gsap.set(heroPanel, { clearProps: 'transform,opacity,filter,visibility,willChange' })
+          gsap.set(heroTargets, { clearProps: 'transform,opacity,filter,visibility,willChange' })
+        },
+      })
+
+      heroTimeline.to(heroPanel, {
+        autoAlpha: 1,
+        scale: 1,
+        filter: 'blur(0px)',
+        duration: 0.58,
+        ease: 'power3.out',
+      })
+
+      if (heroTextTargets.length) {
+        heroTimeline.to(heroTextTargets, {
+          autoAlpha: 1,
+          y: 0,
+          filter: 'blur(0px)',
+          willChange: 'auto',
+          stagger: 0.06,
+        }, '-=0.3')
+      }
+
+      if (mock.length) {
+        heroTimeline.to(mock, {
+          autoAlpha: 1,
+          y: 0,
+          filter: 'blur(0px)',
+          willChange: 'auto',
+        }, heroTextTargets.length ? '-=0.25' : 0)
+      }
     }
 
     if (typeof IntersectionObserver === 'function') {
@@ -209,7 +286,8 @@ export function useHomeAnimations(scopeRef) {
 
     return () => {
       cleanup.forEach((dispose) => dispose())
-      gsap.killTweensOf([...revealSections, ...stepCards])
+      if (heroTimeline) heroTimeline.kill()
+      gsap.killTweensOf([heroPanel, ...heroTargets, ...revealSections, ...stepCards])
     }
   }, { scope: scopeRef })
 }
