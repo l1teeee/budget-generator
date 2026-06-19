@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { FormProvider, useFormStore } from './hooks/useFormStore'
+import HomePage from './components/home/HomePage'
 import StatusBar from './components/layout/StatusBar'
 import StepProgress from './components/layout/StepProgress'
 import FormStep1 from './components/form/FormStep1'
@@ -10,7 +11,7 @@ import TemplatePreview from './components/preview/TemplatePreview'
 import JsonPanel from './components/form/JsonPanel'
 import BrandDrawer from './components/form/BrandDrawer'
 
-function Shell() {
+function Shell({ onHome }) {
   const { step } = useFormStore()
   const previewRef = useRef(null)
   const [jsonOpen, setJsonOpen] = useState(false)
@@ -25,7 +26,7 @@ function Shell() {
 
   return (
     <div className="app-shell">
-      <StatusBar onOpenBrand={() => setBrandOpen(true)} onOpenJson={() => setJsonOpen(true)} />
+      <StatusBar onHome={onHome} onOpenBrand={() => setBrandOpen(true)} onOpenJson={() => setJsonOpen(true)} />
 
       <div className="app-main">
         <StepProgress />
@@ -47,9 +48,15 @@ function Shell() {
 }
 
 export default function App() {
+  const [view, setView] = useState('home')
+
+  if (view === 'home') {
+    return <HomePage onStart={() => setView('generator')} />
+  }
+
   return (
     <FormProvider>
-      <Shell />
+      <Shell onHome={() => setView('home')} />
     </FormProvider>
   )
 }

@@ -1,11 +1,16 @@
 import { useFormStore } from '../../hooks/useFormStore'
 import ReactMark from '../ui/ReactMark'
 
-export default function StatusBar({ onOpenBrand, onOpenJson }) {
+export default function StatusBar({ onOpenBrand, onOpenJson, onHome }) {
   const { state, saved } = useFormStore()
 
   return (
     <div className="status-bar">
+      {onHome && (
+        <button className="status-action" onClick={onHome} aria-label="Back to home">
+          ← home
+        </button>
+      )}
       <div className="status-brand">
         <span className="brand-icon">
           <ReactMark size={20} color="#061b3d" />
