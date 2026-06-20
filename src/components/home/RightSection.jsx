@@ -24,7 +24,7 @@ export default function RightSection({ reduced }) {
       <motion.p className="lk-panel-sub" variants={item}>Flexible pricing models for any kind of work.</motion.p>
       <motion.div className="lk-panel-grid" variants={item}>
         {TYPES.map(([t, s]) => (
-          <div className="lk-panel-card" key={t}>
+          <div className="lk-panel-card" key={t} role="group" tabIndex={0} aria-label={t + ': ' + s}>
             <strong>{t}</strong>
             <span>{s}</span>
           </div>

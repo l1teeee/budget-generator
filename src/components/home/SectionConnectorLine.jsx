@@ -1,28 +1,48 @@
 import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import OrganicGradientArrowPath from './OrganicGradientArrowPath'
+import { buildRibbon, buildRibbonSpine } from './ribbon'
 
-const EASE = [0.22, 1, 0.36, 1]
-const DRAW = { duration: 1.1, ease: EASE }
-const FADE = { duration: 0.5, ease: EASE }
-
-const END_COLOR = { left: '#CBDDBD', right: '#F0CDB4' }
-
-function wavyH(s, e, amp) {
-  const dx = e.x - s.x
-  const x1 = s.x + dx * 0.33
-  const x2 = s.x + dx * 0.66
-  const y1 = s.y + amp
-  const y2 = e.y - amp
-  return 'M ' + s.x + ' ' + s.y
-    + ' C ' + (s.x + dx * 0.16) + ' ' + s.y + ', ' + (x1 - dx * 0.16) + ' ' + y1 + ', ' + x1 + ' ' + y1
-    + ' S ' + (x2 - dx * 0.16) + ' ' + y2 + ', ' + x2 + ' ' + y2
-    + ' S ' + (e.x - dx * 0.16) + ' ' + e.y + ', ' + e.x + ' ' + e.y
+const COLORS = {
+  left: ['#CBDDBD', '#DDEBCF', '#AEC2FF'],
+  right: ['#F0CDB4', '#F7DDCC', '#AEC2FF'],
 }
 
-export default function SectionConnectorLine({ direction, reduced }) {
+function buildGradient(direction, s, e) {
+  const [start, mid, end] = COLORS[direction] || COLORS.left
+
+  return {
+    x1: s.x,
+    y1: s.y,
+    x2: e.x,
+    y2: e.y,
+    stops: [
+      { offset: '0%', color: start, opacity: 0.9 },
+      { offset: '48%', color: mid, opacity: 0.78 },
+      { offset: '100%', color: end, opacity: 0.88 },
+    ],
+  }
+}
+
+function buildShape(direction, s, e, amp) {
+  const distance = Math.abs(e.x - s.x)
+  const options = {
+    maxHalf: Math.max(18, Math.min(38, distance * 0.14)),
+    minHalf: 6,
+    waveAmp: amp,
+    samples: 44,
+    asymmetry: direction === 'left' ? -0.12 : 0.12,
+  }
+
+  return {
+    path: buildRibbon(s, e, options),
+    spinePath: buildRibbonSpine(s, e, options),
+    gradient: buildGradient(direction, s, e),
+  }
+}
+
+export default function SectionConnectorLine({ direction, reduced, isHovered = false }) {
   const [size, setSize] = useState({ w: 0, h: 0 })
-  const [path, setPath] = useState('')
-  const [grad, setGrad] = useState(null)
+  const [shape, setShape] = useState(null)
 
   useEffect(() => {
     function compute() {
@@ -43,11 +63,10 @@ export default function SectionConnectorLine({ direction, reduced }) {
         s = { x: r.left, y: r.top + r.height / 2 }
         e = { x: 55, y: midY }
       }
-      const amp = Math.min(22, Math.abs(e.x - s.x) * 0.18)
+      const amp = Math.min(30, Math.abs(e.x - s.x) * 0.18)
 
       setSize({ w, h })
-      setPath(wavyH(s, e, amp))
-      setGrad({ x1: s.x, y1: s.y, x2: e.x, y2: e.y })
+      setShape(buildShape(direction, s, e, amp))
     }
 
     const raf = window.requestAnimationFrame(compute)
@@ -60,24 +79,19 @@ export default function SectionConnectorLine({ direction, reduced }) {
     }
   }, [direction])
 
-  if (!size.w || !path || !grad) return null
+  if (!size.w || !shape) return null
 
-  const color = END_COLOR[direction] || '#AEC2FF'
   return (
     <svg className="lk-section-lines" width={size.w} height={size.h} viewBox={'0 0 ' + size.w + ' ' + size.h} aria-hidden="true">
-      <defs>
-        <linearGradient id="lksecgrad" gradientUnits="userSpaceOnUse" x1={grad.x1} y1={grad.y1} x2={grad.x2} y2={grad.y2}>
-          <stop offset="0" stopColor="#AEC2FF" />
-          <stop offset="1" stopColor={color} />
-        </linearGradient>
-      </defs>
-      <motion.path
-        className="lk-connector"
-        d={path}
-        stroke="url(#lksecgrad)"
-        initial={{ pathLength: reduced ? 1 : 0, opacity: 0 }}
-        animate={{ pathLength: 1, opacity: 0.5 }}
-        transition={{ pathLength: reduced ? { duration: 0 } : DRAW, opacity: FADE }}
+      <OrganicGradientArrowPath
+        id={'lk-section-' + direction + '-gradient'}
+        className={'lk-organic-arrow--section lk-organic-arrow--section-' + direction}
+        path={shape.path}
+        spinePath={shape.spinePath}
+        gradient={shape.gradient}
+        opacity={0.52}
+        isHovered={isHovered}
+        reduced={reduced}
       />
     </svg>
   )

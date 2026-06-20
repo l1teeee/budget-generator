@@ -15,7 +15,7 @@ export default function LeftSection({ reduced }) {
       <motion.p className="lk-panel-sub" variants={item}>From a blank page to a billable quote in minutes.</motion.p>
       <motion.div className="lk-panel-grid" variants={item}>
         {STEPS.map(([n, name, status]) => (
-          <div className="lk-step" key={n}>
+          <div className="lk-step" key={n} role="group" tabIndex={0} aria-label={name + ': ' + status}>
             <span className="lk-step-n">{n}</span>
             <span className="lk-step-name">{name}</span>
             <span className="lk-step-status">{status}</span>

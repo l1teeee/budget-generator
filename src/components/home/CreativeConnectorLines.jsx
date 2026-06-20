@@ -1,31 +1,58 @@
 import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import OrganicGradientArrowPath from './OrganicGradientArrowPath'
+import { buildRibbon, buildRibbonSpine } from './ribbon'
 
-const EASE = [0.22, 1, 0.36, 1]
-const DRAW = { duration: 1.1, ease: EASE }
-const FADE = { duration: 0.5, ease: EASE }
+const COLORS = {
+  left: ['#AEC2FF', '#C8D4FF', '#CBDDBD'],
+  right: ['#AEC2FF', '#C8D4FF', '#F0CDB4'],
+}
 
 function opacityFor(active, hovered, dir) {
   if (active !== 'center') return active === dir ? 0.7 : 0.18
   return hovered === dir ? 0.75 : 0.5
 }
 
-/* horizontal travel (s -> e), gentle double wave in Y */
-function wavyH(s, e, amp) {
-  const dx = e.x - s.x
-  const x1 = s.x + dx * 0.33
-  const x2 = s.x + dx * 0.66
-  const y1 = s.y + amp
-  const y2 = e.y - amp
-  return 'M ' + s.x + ' ' + s.y
-    + ' C ' + (s.x + dx * 0.16) + ' ' + s.y + ', ' + (x1 - dx * 0.16) + ' ' + y1 + ', ' + x1 + ' ' + y1
-    + ' S ' + (x2 - dx * 0.16) + ' ' + y2 + ', ' + x2 + ' ' + y2
-    + ' S ' + (e.x - dx * 0.16) + ' ' + e.y + ', ' + e.x + ' ' + e.y
+function ribbonWidth(s, e) {
+  const distance = Math.abs(e.x - s.x)
+
+  return Math.max(20, Math.min(42, distance * 0.16))
+}
+
+function buildGradient(dir, s, e) {
+  const [start, mid, end] = COLORS[dir]
+
+  return {
+    x1: s.x,
+    y1: s.y,
+    x2: e.x,
+    y2: e.y,
+    stops: [
+      { offset: '0%', color: start, opacity: 0.96 },
+      { offset: '54%', color: mid, opacity: 0.82 },
+      { offset: '100%', color: end, opacity: 0.92 },
+    ],
+  }
+}
+
+function buildShape(dir, s, e, amp) {
+  const options = {
+    maxHalf: ribbonWidth(s, e),
+    minHalf: 7,
+    waveAmp: amp,
+    samples: 46,
+    asymmetry: dir === 'left' ? 0.18 : -0.18,
+  }
+
+  return {
+    path: buildRibbon(s, e, options),
+    spinePath: buildRibbonSpine(s, e, options),
+    gradient: buildGradient(dir, s, e),
+  }
 }
 
 export default function CreativeConnectorLines({ active, hovered, reduced }) {
   const [size, setSize] = useState({ w: 0, h: 0 })
-  const [paths, setPaths] = useState({ left: '', right: '' })
+  const [paths, setPaths] = useState({ left: null, right: null })
 
   useEffect(() => {
     function compute() {
@@ -46,11 +73,10 @@ export default function CreativeConnectorLines({ active, hovered, reduced }) {
       const Le = { x: leftA.x + 12, y: leftA.y }
       const Re = { x: rightA.x - 12, y: rightA.y }
 
-      const ampH = Math.min(22, Math.abs(Le.x - Ls.x) * 0.18)
-      const ampHr = Math.min(22, Math.abs(Re.x - Rs.x) * 0.18)
-
-      const left = wavyH(Ls, Le, ampH)
-      const right = wavyH(Rs, Re, ampHr)
+      const ampH = Math.min(34, Math.abs(Le.x - Ls.x) * 0.2)
+      const ampHr = Math.min(34, Math.abs(Re.x - Rs.x) * 0.2)
+      const left = buildShape('left', Ls, Le, ampH)
+      const right = buildShape('right', Rs, Re, ampHr)
 
       setSize({ w, h })
       setPaths({ left, right })
@@ -70,13 +96,16 @@ export default function CreativeConnectorLines({ active, hovered, reduced }) {
   return (
     <svg className="lk-connectors" width={size.w} height={size.h} viewBox={'0 0 ' + size.w + ' ' + size.h} aria-hidden="true">
       {dirs.map((dir) => (
-        <motion.path
+        <OrganicGradientArrowPath
           key={dir}
-          className={'lk-connector lk-connector--' + dir}
-          d={paths[dir]}
-          initial={{ pathLength: reduced ? 1 : 0, opacity: 0 }}
-          animate={{ pathLength: 1, opacity: opacityFor(active, hovered, dir) }}
-          transition={{ pathLength: reduced ? { duration: 0 } : DRAW, opacity: FADE }}
+          id={'lk-landing-' + dir + '-gradient'}
+          className={'lk-organic-arrow--' + dir}
+          path={paths[dir].path}
+          spinePath={paths[dir].spinePath}
+          gradient={paths[dir].gradient}
+          opacity={opacityFor(active, hovered, dir)}
+          isHovered={hovered === dir}
+          reduced={reduced}
         />
       ))}
     </svg>

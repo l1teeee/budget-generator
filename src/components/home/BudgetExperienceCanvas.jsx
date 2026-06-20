@@ -146,7 +146,7 @@ export default function BudgetExperienceCanvas({ children }) {
             exit={panelMotion.exit}
             transition={panelTransition}
           >
-            <SectionConnectorLine direction={active} reduced={reduced} />
+            <SectionConnectorLine direction={active} reduced={reduced} isHovered={hovered === BACK_DIR[active]} />
             {renderPanel(active, reduced)}
           </motion.div>
         )}
@@ -156,15 +156,35 @@ export default function BudgetExperienceCanvas({ children }) {
         <div className="lk-arrows">
           <MinimalSvgArrowButton
             direction={BACK_DIR[active]}
-            className="lk-arrow--return"
+            className={'lk-arrow--return lk-arrow--return-' + active}
             ariaLabel="Volver a la landing"
-            onClick={() => navigate('center')}
+            onClick={() => {
+              setHovered(null)
+              navigate('center')
+            }}
+            onHover={setHovered}
           />
         </div>
       ) : (
         <div className="lk-arrows">
-          <MinimalSvgArrowButton direction="left" ariaLabel="Ir a seccion izquierda" onClick={() => navigate('left')} onHover={setHovered} />
-          <MinimalSvgArrowButton direction="right" ariaLabel="Ir a seccion derecha" onClick={() => navigate('right')} onHover={setHovered} />
+          <MinimalSvgArrowButton
+            direction="left"
+            ariaLabel="Ir a seccion izquierda"
+            onClick={() => {
+              setHovered(null)
+              navigate('left')
+            }}
+            onHover={setHovered}
+          />
+          <MinimalSvgArrowButton
+            direction="right"
+            ariaLabel="Ir a seccion derecha"
+            onClick={() => {
+              setHovered(null)
+              navigate('right')
+            }}
+            onHover={setHovered}
+          />
         </div>
       )}
     </div>
