@@ -1,0 +1,475 @@
+/* ============================================================
+   BudgetFlow AI - Single-viewport canvas (100svh, no scroll)
+   Center = original hero only. Sections appear on navigation.
+   Same palette as the landing. Only scale/layout adjusted.
+   ============================================================ */
+
+/* ---- single viewport, no body scroll on the landing ---- */
+body.lk-active {
+  overflow: hidden;
+  height: 100svh;
+}
+
+.lk-canvas {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.lk-world-center {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  will-change: transform, filter;
+}
+
+/* ---- landing as a single-viewport grid ---- */
+.lk {
+  height: 100%;
+  min-height: 0;
+  padding-top: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  background: transparent;
+}
+
+/* nav: keep the floating pill, but as a static top row */
+.lk-nav-wrap {
+  position: static;
+  top: auto;
+  padding: clamp(8px, 1.6vh, 16px) 16px 0;
+}
+
+/* hero fills the 1fr row (taller, more top/bottom), content centered */
+.lk-hero {
+  align-self: stretch;
+  justify-content: center;
+  margin: clamp(10px, 1.8vh, 22px) auto;
+  max-width: 1120px;
+  max-height: 100%;
+  padding: clamp(28px, 6vh, 88px) clamp(20px, 4vw, 56px);
+  gap: clamp(16px, 3.2vh, 40px);
+  overflow: hidden;
+}
+
+.lk-eyebrow {
+  margin: 0 0 clamp(6px, 1vh, 14px);
+}
+
+.lk-h1 {
+  font-size: clamp(32px, 5.4vh, 66px);
+  line-height: 1.03;
+  margin: 0;
+}
+
+.lk-sub {
+  font-size: clamp(14px, 1.9vh, 18px);
+  margin: clamp(8px, 1.4vh, 16px) auto 0;
+}
+
+.lk-cta-row {
+  margin-top: clamp(12px, 2vh, 26px);
+}
+
+.lk-microcopy {
+  margin: clamp(8px, 1.2vh, 16px) 0 0;
+}
+
+/* slightly smaller hero buttons on short viewports (same look) */
+.lk-btn-hero,
+.lk-btn-lg {
+  height: clamp(46px, 6.2vh, 56px);
+}
+
+/* card: shrink subtly on short viewports, never cut */
+.lk-mock {
+  margin: clamp(14px, 2.4vh, 32px) auto 0;
+  padding: clamp(14px, 1.8vh, 22px);
+  max-width: clamp(300px, 46vh, 420px);
+}
+
+.lk-mock-head {
+  padding-bottom: clamp(8px, 1.2vh, 16px);
+}
+
+.lk-mock-fields {
+  gap: clamp(6px, 1vh, 10px) 22px;
+  margin: clamp(10px, 1.6vh, 18px) 0;
+}
+
+.lk-mock-table {
+  padding-top: clamp(8px, 1.2vh, 14px);
+}
+
+.lk-mock-line {
+  padding: clamp(5px, 0.9vh, 9px) 12px;
+}
+
+.lk-mock-foot {
+  height: clamp(38px, 5vh, 46px);
+  margin-top: clamp(8px, 1.2vh, 14px);
+}
+
+/* minimal footer row (brand signature) */
+.lk-foot--min {
+  padding: clamp(8px, 1.4vh, 18px) 24px;
+  font-size: 13px;
+  opacity: 0.86;
+}
+
+/* ---- CREATIVE CONNECTOR LINES (anchored to the hero edges) ---- */
+.lk-connectors {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.lk-connector {
+  fill: none;
+  stroke: #AEC2FF;
+  stroke-width: 100;
+  stroke-linecap: round;
+}
+
+.lk-section-lines {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ---- PANELS (cream like the body, so they read as the same site) ---- */
+.lk-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(48px, 6vh, 84px) 24px 48px;
+  overflow: hidden;
+  background: #F1EFE9;
+}
+
+/* ---- PANEL INNER (centered editorial column) ---- */
+.lk-panel-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1120px;
+  max-height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.lk-panel-inner .lk-eyebrow {
+  margin: 0 0 14px;
+}
+
+.lk-panel-inner .lk-h2 {
+  margin: 0;
+  max-width: 18ch;
+}
+
+.lk-panel-sub {
+  margin: 12px auto 0;
+  max-width: 52ch;
+  font-size: 15px;
+  color: #565563;
+}
+
+/* ---- SUBTLE PARALLAX ACCENT (depth layer, barely visible) ---- */
+.lk-parallax {
+  will-change: transform;
+}
+
+.lk-panel-accent {
+  position: absolute;
+  top: -4%;
+  left: 50%;
+  margin-left: -160px;
+  width: 320px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(174, 194, 255, 0.18), transparent 70%);
+  filter: blur(30px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.lk-panel--left .lk-panel-accent {
+  background: radial-gradient(circle, rgba(203, 221, 189, 0.30), transparent 70%);
+}
+
+.lk-panel--right .lk-panel-accent {
+  background: radial-gradient(circle, rgba(240, 205, 180, 0.30), transparent 70%);
+}
+
+/* section colors used as real accents (eyebrow pill, chips, list markers) */
+.lk-panel--left .lk-eyebrow,
+.lk-panel--right .lk-eyebrow {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 999px;
+  opacity: 1;
+}
+
+.lk-panel--left .lk-eyebrow {
+  background: #CBDDBD;
+}
+
+.lk-panel--right .lk-eyebrow {
+  background: #F0CDB4;
+}
+
+.lk-panel--left .lk-chip {
+  background: #CBDDBD;
+}
+
+.lk-panel--right .lk-panel-list li::before {
+  background: #F0CDB4;
+  border: none;
+}
+
+.lk-panel--left .lk-step,
+.lk-panel--left .lk-panel-card {
+  border-color: #CBDDBD;
+}
+
+.lk-panel--right .lk-step,
+.lk-panel--right .lk-panel-card {
+  border-color: #F0CDB4;
+}
+
+.lk-panel--left .lk-chip {
+  border-color: #CBDDBD;
+}
+
+/* ---- CONTENT GRIDS ---- */
+.lk-panel-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: 1000px;
+  margin-top: 36px;
+}
+
+.lk-panel-grid--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  max-width: 760px;
+}
+
+/* ---- CARDS (identical to the landing card language) ---- */
+.lk-panel-card {
+  background: #FCFBF8;
+  border: 1.5px solid #16161D;
+  border-radius: 16px;
+  padding: 22px 20px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lk-panel-card strong {
+  font-size: 17px;
+  font-weight: 750;
+  color: #16161D;
+}
+
+.lk-panel-card span {
+  font-size: 13px;
+  color: #565563;
+}
+
+/* ---- CHIPS ---- */
+.lk-panel-chips {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 28px;
+}
+
+.lk-chip {
+  border: 1.5px solid #16161D;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: 700;
+  font-size: 13px;
+  color: #16161D;
+  background: #FCFBF8;
+}
+
+/* ---- FEATURE LIST ---- */
+.lk-panel-list {
+  list-style: none;
+  padding: 0;
+  margin: 30px auto 0;
+  max-width: 460px;
+  width: 100%;
+  text-align: left;
+  display: grid;
+  gap: 10px;
+}
+
+.lk-panel-list li {
+  position: relative;
+  padding-left: 26px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #16161D;
+}
+
+.lk-panel-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 11px;
+  height: 11px;
+  border-radius: 4px;
+  background: #16161D;
+}
+
+/* ---- DOWN SECTION ---- */
+.lk-panel-note {
+  margin: 26px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #565563;
+}
+
+/* ---- MINIMAL SVG ARROW BUTTONS (chevron-free thin arrows) ---- */
+.lk-arrow {
+  position: fixed;
+  z-index: 90;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: #AEC2FF;
+  color: #16161D;
+  cursor: pointer;
+}
+
+.lk-arrow:focus-visible {
+  outline: 2px solid #16161D;
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+.lk-arrow-ico {
+  width: 30px;
+  height: 30px;
+}
+
+.lk-arrow--left {
+  left: 28px;
+  top: 50%;
+  margin-top: -25px;
+  background: #CBDDBD;
+}
+
+.lk-arrow--right {
+  right: 28px;
+  top: 50%;
+  margin-top: -25px;
+  background: #F0CDB4;
+}
+
+.lk-arrow--return {
+  background: #E7E3DA;
+}
+
+/* ---- RESPONSIVE: short viewports compress further ---- */
+@media (max-height: 760px) {
+  .lk-h1 {
+    font-size: clamp(24px, 4.2vh, 44px);
+  }
+
+  .lk-sub {
+    font-size: clamp(13px, 1.7vh, 16px);
+  }
+
+  .lk-mock {
+    max-width: clamp(280px, 40vh, 360px);
+  }
+}
+
+/* ---- RESPONSIVE: width ---- */
+@media (max-width: 820px) {
+  .lk-panel {
+    padding: clamp(64px, 7vh, 92px) 18px 48px;
+  }
+
+  .lk-panel-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .lk-connectors {
+    display: none;
+  }
+
+  /* arrows become a minimal, touch-friendly bottom row */
+  .lk-arrow {
+    width: 50px;
+    height: 50px;
+    top: auto !important;
+    bottom: 18px;
+    border-radius: 999px;
+    border: none;
+  }
+
+  .lk-arrow--left {
+    left: calc(50% - 60px);
+    margin: 0;
+  }
+
+  .lk-arrow--right {
+    left: auto;
+    right: calc(50% - 60px);
+    margin: 0;
+  }
+
+  .lk-arrow--return {
+    left: 50%;
+    right: auto;
+    margin-left: -25px;
+  }
+}
+
+@media (max-width: 520px) {
+  .lk-panel-grid {
+    grid-template-columns: 1fr;
+    max-width: 360px;
+  }
+
+  .lk-panel-grid--three {
+    max-width: 360px;
+  }
+}
+
+/* ---- REDUCED MOTION ---- */
+@media (prefers-reduced-motion: reduce) {
+  .lk-parallax,
+  .lk-panel-accent {
+    transform: none !important;
+  }
+
+  .lk-world-center {
+    filter: none !important;
+  }
+}
