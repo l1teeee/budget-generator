@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { scrollToLandingSection, useHomeAnimations } from '../../hooks/useHomeAnimations'
+import SectionBlob from './SectionBlob'
 
 const MOCK_FIELDS = [
   ['Client', 'John Carter'],
@@ -46,6 +47,11 @@ export default function CenterLanding({ onStart }) {
 
       {/* ============ HERO (unchanged) ============ */}
       <section className="lk-hero" id="top">
+        <div className="lk-blob-wrap" aria-hidden="true">
+          <SectionBlob variant="center" />
+        </div>
+        <span className="lk-hero-glow lk-hero-glow--title" aria-hidden="true" />
+        <span className="lk-hero-glow lk-hero-glow--card" aria-hidden="true" />
         <div className="lk-hero-inner">
           <p className="lk-eyebrow">Budget generator</p>
           <h1 className="lk-h1">Start your budget in seconds.</h1>

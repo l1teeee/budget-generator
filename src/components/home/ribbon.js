@@ -1,84 +1,66 @@
-function cubic(p0, p1, p2, p3, t) {
-  const mt = 1 - t
-  const a = mt * mt * mt
-  const b = 3 * mt * mt * t
-  const c = 3 * mt * t * t
-  const d = t * t * t
-  return {
-    x: a * p0.x + b * p1.x + c * p2.x + d * p3.x,
-    y: a * p0.y + b * p1.y + c * p2.y + d * p3.y,
-  }
-}
+/* Smooth multi-wave connector curve, uniform width.
+   centerPoints builds a wavy centerline (several gentle waves anchored at both
+   ends); smoothPath threads a Catmull-Rom spline through them so the result is a
+   continuous smooth curve with many turns. It is stroked at a constant width
+   (round caps) so the line stays uniform, just wider and curvier. */
 
-function cubicD(p0, p1, p2, p3, t) {
-  const mt = 1 - t
-  const a = 3 * mt * mt
-  const b = 6 * mt * t
-  const c = 3 * t * t
-  return {
-    x: a * (p1.x - p0.x) + b * (p2.x - p1.x) + c * (p3.x - p2.x),
-    y: a * (p1.y - p0.y) + b * (p2.y - p1.y) + c * (p3.y - p2.y),
-  }
-}
-
-function getControls(s, e, opts = {}) {
+function centerPoints(s, e, opts = {}) {
+  const n = opts.samples || 52
+  const waves = opts.waves || 2.6
+  const waveAmp = opts.waveAmp || 48
+  const phase = opts.phase || 0
+  const asym = opts.asymmetry || 0
   const dx = e.x - s.x
   const dy = e.y - s.y
-  const waveAmp = opts.waveAmp || 26
-  const asymmetry = opts.asymmetry || 0.14
-  const c1 = {
-    x: s.x + dx * (0.28 + asymmetry * 0.2),
-    y: s.y + dy * 0.12 - waveAmp,
-  }
-  const c2 = {
-    x: s.x + dx * (0.72 - asymmetry * 0.2),
-    y: e.y - dy * 0.12 + waveAmp * 0.74,
-  }
-
-  return { c1, c2 }
-}
-
-function halfWidthAt(t, opts = {}) {
-  const maxHalf = opts.maxHalf || 24
-  const minHalf = opts.minHalf || Math.max(6, maxHalf * 0.18)
-  const belly = Math.pow(Math.sin(Math.PI * t), 0.64)
-  const irregular = 1 + Math.sin(t * Math.PI * 3.1 + 0.45) * 0.09
-  const taper = minHalf + (maxHalf - minHalf) * belly * irregular
-
-  return Math.max(minHalf, taper)
-}
-
-export function buildRibbon(s, e, opts) {
-  const n = (opts && opts.samples) || 40
-  const { c1, c2 } = getControls(s, e, opts)
-  const top = []
-  const bot = []
+  const len = Math.hypot(dx, dy) || 1
+  // unit perpendicular to the overall direction (waves push along this axis)
+  const px = -dy / len
+  const py = dx / len
+  const pts = []
 
   for (let i = 0; i <= n; i++) {
     const t = i / n
-    const p = cubic(s, c1, c2, e, t)
-    const d = cubicD(s, c1, c2, e, t)
-    const len = Math.hypot(d.x, d.y) || 1
-    const nx = -d.y / len
-    const ny = d.x / len
-    const hw = halfWidthAt(t, opts)
+    // envelope pins both ends to s and e so the line exits the edges cleanly
+    const env = Math.pow(Math.sin(Math.PI * t), 0.85)
+    // three blended harmonics -> more, non-identical turns (creative squiggle)
+    const wave =
+      Math.sin(t * Math.PI * waves + phase) +
+      0.42 * Math.sin(t * Math.PI * waves * 1.7 + phase * 1.5) +
+      0.22 * Math.sin(t * Math.PI * waves * 2.6 + phase * 0.7)
+    const off = waveAmp * env * (wave / 1.64) + asym * waveAmp * env * 0.5
 
-    top.push({ x: p.x + nx * hw, y: p.y + ny * hw })
-    bot.push({ x: p.x - nx * hw, y: p.y - ny * hw })
+    pts.push({
+      x: s.x + dx * t + px * off,
+      y: s.y + dy * t + py * off,
+    })
   }
 
-  let d = 'M ' + top[0].x.toFixed(1) + ' ' + top[0].y.toFixed(1)
-  for (let i = 1; i < top.length; i++) d += ' L ' + top[i].x.toFixed(1) + ' ' + top[i].y.toFixed(1)
-  for (let i = bot.length - 1; i >= 0; i--) d += ' L ' + bot[i].x.toFixed(1) + ' ' + bot[i].y.toFixed(1)
-  d += ' Z'
+  return pts
+}
+
+function smoothPath(pts) {
+  if (pts.length < 2) return ''
+
+  let d = 'M ' + pts[0].x.toFixed(1) + ' ' + pts[0].y.toFixed(1)
+
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] || pts[i]
+    const p1 = pts[i]
+    const p2 = pts[i + 1]
+    const p3 = pts[i + 2] || p2
+    const c1x = p1.x + (p2.x - p0.x) / 6
+    const c1y = p1.y + (p2.y - p0.y) / 6
+    const c2x = p2.x - (p3.x - p1.x) / 6
+    const c2y = p2.y - (p3.y - p1.y) / 6
+
+    d += ' C ' + c1x.toFixed(1) + ' ' + c1y.toFixed(1)
+      + ', ' + c2x.toFixed(1) + ' ' + c2y.toFixed(1)
+      + ', ' + p2.x.toFixed(1) + ' ' + p2.y.toFixed(1)
+  }
+
   return d
 }
 
-export function buildRibbonSpine(s, e, opts) {
-  const { c1, c2 } = getControls(s, e, opts)
-
-  return 'M ' + s.x.toFixed(1) + ' ' + s.y.toFixed(1)
-    + ' C ' + c1.x.toFixed(1) + ' ' + c1.y.toFixed(1)
-    + ', ' + c2.x.toFixed(1) + ' ' + c2.y.toFixed(1)
-    + ', ' + e.x.toFixed(1) + ' ' + e.y.toFixed(1)
+export function buildConnectorCurve(s, e, opts) {
+  return smoothPath(centerPoints(s, e, opts))
 }

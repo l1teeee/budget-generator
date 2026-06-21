@@ -6,20 +6,20 @@ const DRAW = { duration: 0.78, ease: EASE }
 
 export default function OrganicGradientArrowPath({
   id,
-  path,
-  spinePath,
+  linePath,
   gradient,
+  strokeWidth = 30,
   opacity = 0.55,
   isHovered = false,
   reduced = false,
   className = '',
 }) {
-  if (!path || !spinePath || !gradient) {
+  if (!linePath || !gradient) {
     return null
   }
 
-  const transform = reduced || !isHovered ? 'scale(1)' : 'scale(1.014, 1.025)'
-  const animatedOpacity = reduced ? opacity : isHovered ? Math.min(opacity + 0.15, 0.78) : opacity
+  const animatedOpacity = reduced ? opacity : isHovered ? Math.min(opacity + 0.15, 0.85) : opacity
+  const width = reduced || !isHovered ? strokeWidth : strokeWidth + 3
 
   return (
     <g className={('lk-organic-arrow ' + className).trim()}>
@@ -43,20 +43,29 @@ export default function OrganicGradientArrowPath({
         </linearGradient>
       </defs>
 
+      {/* base layer: wider, blurred, low opacity -> depth behind the defined line */}
       <motion.path
-        className="lk-organic-ribbon"
-        d={path}
-        fill={'url(#' + id + ')'}
+        className="lk-organic-line lk-organic-line--glow"
+        d={linePath}
+        fill="none"
+        stroke={'url(#' + id + ')'}
+        strokeLinecap="round"
+        strokeLinejoin="round"
         initial={{ opacity: 0 }}
-        animate={{ opacity: animatedOpacity, transform }}
-        transition={FADE}
+        animate={{ opacity: animatedOpacity * 0.55, strokeWidth: width + 24 }}
+        transition={{ opacity: FADE, strokeWidth: FADE }}
       />
+      {/* top layer: the defined pastel-gradient stroke */}
       <motion.path
-        className="lk-organic-spine"
-        d={spinePath}
-        initial={{ pathLength: reduced ? 1 : 0, opacity: 0 }}
-        animate={{ pathLength: 1, opacity: reduced ? 0.18 : isHovered ? 0.28 : 0.18 }}
-        transition={{ pathLength: reduced ? { duration: 0 } : DRAW, opacity: FADE }}
+        className="lk-organic-line"
+        d={linePath}
+        fill="none"
+        stroke={'url(#' + id + ')'}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        initial={{ opacity: 0, pathLength: reduced ? 1 : 0 }}
+        animate={{ opacity: animatedOpacity, pathLength: 1, strokeWidth: width }}
+        transition={{ pathLength: reduced ? { duration: 0 } : DRAW, opacity: FADE, strokeWidth: FADE }}
       />
     </g>
   )

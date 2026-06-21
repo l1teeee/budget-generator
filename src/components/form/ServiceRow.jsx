@@ -24,12 +24,15 @@ export default function ServiceRow({ service, symbol }) {
         gap: '12px',
         padding: '11px 12px',
         marginBottom: '6px',
-        border: `1.5px solid ${on ? '#16161D' : 'rgba(22,22,29,0.16)'}`,
-        background: on ? '#EAEEFB' : '#FCFBF8',
+        border: `1.5px solid ${on ? 'rgba(22,22,29,0.86)' : 'rgba(22,22,29,0.14)'}`,
+        background: on ? '#EEF1FC' : '#FCFBF8',
         borderRadius: '16px',
+        boxShadow: on
+          ? '0 12px 26px -20px rgba(22,22,29,0.42), 0 1px 0 rgba(255,255,255,0.8) inset'
+          : '0 6px 16px -14px rgba(22,22,29,0.2)',
         cursor: 'pointer',
         userSelect: 'none',
-        transition: 'background-color 180ms ease, border-color 180ms ease',
+        transition: 'background-color 180ms ease, border-color 180ms ease, box-shadow 200ms ease',
       }}
     >
       <span style={{
@@ -71,15 +74,15 @@ export default function ServiceRow({ service, symbol }) {
           onClick={e => e.stopPropagation()}
           onChange={e => updateServiceQuantity(service.id, parseInt(e.target.value) || 1)}
           style={{
-            width: '42px',
+            width: '48px',
             textAlign: 'center',
             fontFamily: "'Hanken Grotesk', sans-serif",
             fontSize: '12px',
             color: '#16161D',
             background: '#ffffff',
             border: '1.5px solid rgba(22,22,29,0.18)',
-            borderRadius: '8px',
-            padding: '3px 0',
+            borderRadius: '999px',
+            padding: '5px 0',
             fontVariantNumeric: 'tabular-nums',
           }}
         />

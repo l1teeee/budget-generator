@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import OrganicGradientArrowPath from './OrganicGradientArrowPath'
-import { buildRibbon, buildRibbonSpine } from './ribbon'
+import { buildConnectorCurve } from './ribbon'
 
 const COLORS = {
   left: ['#AEC2FF', '#C8D4FF', '#CBDDBD'],
@@ -9,13 +9,7 @@ const COLORS = {
 
 function opacityFor(active, hovered, dir) {
   if (active !== 'center') return active === dir ? 0.7 : 0.18
-  return hovered === dir ? 0.75 : 0.5
-}
-
-function ribbonWidth(s, e) {
-  const distance = Math.abs(e.x - s.x)
-
-  return Math.max(20, Math.min(42, distance * 0.16))
+  return hovered === dir ? 0.78 : 0.55
 }
 
 function buildGradient(dir, s, e) {
@@ -28,32 +22,40 @@ function buildGradient(dir, s, e) {
     y2: e.y,
     stops: [
       { offset: '0%', color: start, opacity: 0.96 },
-      { offset: '54%', color: mid, opacity: 0.82 },
+      { offset: '54%', color: mid, opacity: 0.84 },
       { offset: '100%', color: end, opacity: 0.92 },
     ],
   }
 }
 
-function buildShape(dir, s, e, amp) {
+function buildShape(dir, s, e, amp, phase) {
   const options = {
-    maxHalf: ribbonWidth(s, e),
-    minHalf: 7,
     waveAmp: amp,
-    samples: 46,
-    asymmetry: dir === 'left' ? 0.18 : -0.18,
+    waves: 3.1,
+    samples: 84,
+    asymmetry: dir === 'left' ? 0.16 : -0.16,
+    phase: (dir === 'left' ? 0 : Math.PI * 0.3) + phase,
   }
 
   return {
-    path: buildRibbon(s, e, options),
-    spinePath: buildRibbonSpine(s, e, options),
+    linePath: buildConnectorCurve(s, e, options),
     gradient: buildGradient(dir, s, e),
+  }
+}
+
+function buildPaths(geom, phase, ampMul) {
+  return {
+    left: buildShape('left', geom.left.s, geom.left.e, geom.left.amp * ampMul, phase),
+    right: buildShape('right', geom.right.s, geom.right.e, geom.right.amp * ampMul, -phase),
   }
 }
 
 export default function CreativeConnectorLines({ active, hovered, reduced }) {
   const [size, setSize] = useState({ w: 0, h: 0 })
   const [paths, setPaths] = useState({ left: null, right: null })
+  const geom = useRef(null)
 
+  // measure the geometry (endpoints + amplitude) on mount / resize / nav
   useEffect(() => {
     function compute() {
       if (typeof window === 'undefined' || typeof document === 'undefined') return
@@ -67,19 +69,23 @@ export default function CreativeConnectorLines({ active, hovered, reduced }) {
       const leftA = { x: 45, y: h / 2 }
       const rightA = { x: w - 45, y: h / 2 }
 
-      const Ls = { x: r.left, y: midY }
-      const Rs = { x: r.right, y: midY }
+      // start a little inside the hero so the end tucks under the panel
+      const Ls = { x: r.left + 30, y: midY }
+      const Rs = { x: r.right - 30, y: midY }
 
       const Le = { x: leftA.x + 12, y: leftA.y }
       const Re = { x: rightA.x - 12, y: rightA.y }
 
-      const ampH = Math.min(34, Math.abs(Le.x - Ls.x) * 0.2)
-      const ampHr = Math.min(34, Math.abs(Re.x - Rs.x) * 0.2)
-      const left = buildShape('left', Ls, Le, ampH)
-      const right = buildShape('right', Rs, Re, ampHr)
+      const ampH = Math.min(64, Math.abs(Le.x - Ls.x) * 0.46)
+      const ampHr = Math.min(64, Math.abs(Re.x - Rs.x) * 0.46)
+
+      geom.current = {
+        left: { s: Ls, e: Le, amp: ampH },
+        right: { s: Rs, e: Re, amp: ampHr },
+      }
 
       setSize({ w, h })
-      setPaths({ left, right })
+      setPaths(buildPaths(geom.current, 0, 1))
     }
 
     const raf = window.requestAnimationFrame(compute)
@@ -90,7 +96,31 @@ export default function CreativeConnectorLines({ active, hovered, reduced }) {
     }
   }, [active])
 
-  if (!size.w) return null
+  // gentle continuous undulation so the lines feel alive, not static
+  useEffect(() => {
+    if (reduced || active !== 'center') return undefined
+
+    let raf = 0
+    let start = 0
+
+    function tick(ts) {
+      if (!start) start = ts
+      const t = (ts - start) / 1000
+      const phase = Math.sin(t * 0.45) * 1.15 + t * 0.12
+      const ampMul = 1 + Math.sin(t * 0.7) * 0.08
+
+      if (geom.current) {
+        setPaths(buildPaths(geom.current, phase, ampMul))
+      }
+
+      raf = window.requestAnimationFrame(tick)
+    }
+
+    raf = window.requestAnimationFrame(tick)
+    return () => window.cancelAnimationFrame(raf)
+  }, [reduced, active])
+
+  if (!size.w || !paths.left) return null
 
   const dirs = ['left', 'right']
   return (
@@ -100,9 +130,9 @@ export default function CreativeConnectorLines({ active, hovered, reduced }) {
           key={dir}
           id={'lk-landing-' + dir + '-gradient'}
           className={'lk-organic-arrow--' + dir}
-          path={paths[dir].path}
-          spinePath={paths[dir].spinePath}
+          linePath={paths[dir].linePath}
           gradient={paths[dir].gradient}
+          strokeWidth={52}
           opacity={opacityFor(active, hovered, dir)}
           isHovered={hovered === dir}
           reduced={reduced}

@@ -61,7 +61,9 @@ body.lk-active #root {
   transition:
     background-color 180ms ease,
     border-color 180ms ease,
-    color 160ms ease !important;
+    color 160ms ease,
+    box-shadow 180ms ease,
+    transform 150ms cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
 @media (hover: hover) and (pointer: fine) {

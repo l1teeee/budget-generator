@@ -29,6 +29,9 @@ export default function PDFButton({ previewRef }) {
         padding: '15px 24px',
         width: '100%',
         opacity: blocked ? 0.72 : 1,
+        boxShadow: blocked
+          ? 'none'
+          : '0 14px 28px -16px rgba(22,22,29,0.5), 0 1px 0 rgba(255,255,255,0.12) inset',
       }}
     >
       <span

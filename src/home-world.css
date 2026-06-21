@@ -4,7 +4,7 @@
    Same palette as the landing. Only scale/layout adjusted.
    ============================================================ */
 
-/* ---- single viewport, no body scroll on the landing ---- */
+/* ---- outer stays exactly one viewport: no body scrollbar in the normal case ---- */
 body.lk-active {
   overflow: hidden;
   height: 100svh;
@@ -18,21 +18,22 @@ body.lk-active {
   --lk-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* one screen, no scroll: the landing always fits the viewport */
 .lk-world-center {
   position: relative;
   z-index: 1;
   height: 100%;
+  overflow: hidden;
   will-change: transform, filter;
 }
 
-/* ---- landing as a single-viewport grid ---- */
+/* ---- landing as a flex column that fits exactly one viewport ---- */
 .lk {
   height: 100%;
   min-height: 0;
   padding-top: 0;
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   background: transparent;
 }
 
@@ -43,74 +44,90 @@ body.lk-active {
   padding: clamp(8px, 1.6vh, 16px) 16px 0;
 }
 
-/* hero fills the 1fr row (taller, more top/bottom), content centered */
+/* hero fills the middle row, centers its content, and shrinks to fit one screen */
 .lk-hero {
-  align-self: stretch;
+  flex: 1 1 auto;
+  min-height: 0;
   justify-content: center;
-  margin: clamp(10px, 1.8vh, 22px) auto;
-  max-width: 1120px;
-  max-height: 100%;
-  padding: clamp(28px, 6vh, 88px) clamp(20px, 4vw, 56px);
-  gap: clamp(16px, 3.2vh, 40px);
-  overflow: hidden;
+  width: min(calc(100% - clamp(24px, 4vw, 48px)), 620px);
+  max-width: 620px;
+  margin: clamp(6px, 1.2vh, 16px) auto;
+  padding-block: clamp(20px, 3vh, 40px);
+  padding-inline: clamp(20px, 4vw, 42px);
+  gap: clamp(14px, 2.4vh, 30px);
+  overflow: clip; /* contains the splash blob; clips gracefully on extreme zoom */
+}
+
+.lk-hero-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lk-hero-inner {
+  max-width: 520px;
+  width: 100%;
 }
 
 .lk-eyebrow {
-  margin: 0 0 clamp(6px, 1vh, 14px);
+  line-height: 1;
+  margin: 0 0 clamp(8px, 1.4vh, 14px);
 }
 
 .lk-h1 {
-  font-size: clamp(32px, 5.4vh, 66px);
-  line-height: 1.03;
+  font-size: clamp(30px, 4.6vh, 56px);
+  line-height: 1.06;
   margin: 0;
 }
 
 .lk-sub {
+  max-width: 46ch;
   font-size: clamp(14px, 1.9vh, 18px);
-  margin: clamp(8px, 1.4vh, 16px) auto 0;
+  margin: clamp(8px, 1.4vh, 14px) auto 0;
 }
 
 .lk-cta-row {
-  margin-top: clamp(12px, 2vh, 26px);
+  gap: clamp(12px, 2vw, 20px);
+  margin-top: clamp(14px, 2.2vh, 22px);
 }
 
 .lk-microcopy {
-  margin: clamp(8px, 1.2vh, 16px) 0 0;
+  margin: clamp(8px, 1.4vh, 14px) 0 0;
 }
 
-/* slightly smaller hero buttons on short viewports (same look) */
+/* same button scale as the previous single-screen composition */
 .lk-btn-hero,
 .lk-btn-lg {
   height: clamp(46px, 6.2vh, 56px);
 }
 
-/* card: shrink subtly on short viewports, never cut */
+/* preview card: original scale, now separated by hero gap and bottom padding */
 .lk-mock {
-  margin: clamp(14px, 2.4vh, 32px) auto 0;
-  padding: clamp(14px, 1.8vh, 22px);
-  max-width: clamp(300px, 46vh, 420px);
+  margin: 0 auto;
+  padding: clamp(12px, 1.4vh, 16px);
+  max-width: clamp(290px, 42vh, 400px);
 }
 
 .lk-mock-head {
-  padding-bottom: clamp(8px, 1.2vh, 16px);
+  padding-bottom: clamp(8px, 1vh, 12px);
 }
 
 .lk-mock-fields {
-  gap: clamp(6px, 1vh, 10px) 22px;
-  margin: clamp(10px, 1.6vh, 18px) 0;
+  gap: clamp(6px, 0.8vh, 9px) 20px;
+  margin: clamp(9px, 1.1vh, 12px) 0;
 }
 
 .lk-mock-table {
-  padding-top: clamp(8px, 1.2vh, 14px);
+  padding-top: clamp(8px, 1vh, 11px);
 }
 
 .lk-mock-line {
-  padding: clamp(5px, 0.9vh, 9px) 12px;
+  padding: clamp(5px, 0.65vh, 7px) 10px;
 }
 
 .lk-mock-foot {
-  height: clamp(38px, 5vh, 46px);
-  margin-top: clamp(8px, 1.2vh, 14px);
+  height: clamp(36px, 4.4vh, 40px);
+  margin-top: clamp(7px, 1vh, 10px);
 }
 
 /* minimal footer row (brand signature) */
@@ -120,7 +137,7 @@ body.lk-active {
   opacity: 0.86;
 }
 
-/* ---- ORGANIC CONNECTOR RIBBONS (anchored to the hero edges) ---- */
+/* ---- UNIFORM CONNECTOR LINES (anchored to the hero edges) ---- */
 .lk-connectors {
   position: fixed;
   inset: 0;
@@ -128,26 +145,13 @@ body.lk-active {
   pointer-events: none;
 }
 
-.lk-organic-ribbon {
-  transform-box: fill-box;
-  transform-origin: center;
-  will-change: opacity, transform;
+.lk-organic-line {
+  will-change: opacity, stroke-width;
 }
 
-.lk-organic-spine {
-  fill: none;
-  stroke: rgba(22, 22, 29, 0.18);
-  stroke-width: 1.35;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
-}
-
-.lk-section-lines {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
+/* wide, blurred base layer that reads as the wave's soft body */
+.lk-organic-line--glow {
+  filter: blur(11px);
 }
 
 /* ---- PANELS (cream like the body, so they read as the same site) ---- */
@@ -156,21 +160,70 @@ body.lk-active {
   inset: 0;
   z-index: 80;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: clamp(48px, 6vh, 84px) 24px 48px;
-  overflow: hidden;
+  padding: clamp(48px, 6vh, 84px) 24px clamp(64px, 9vh, 96px);
+  overflow-x: hidden;
+  overflow-y: auto;
   background: #F1EFE9;
 }
 
+/* animated tint layer: slow, soft color drift in each section's palette */
+.lk-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-size: 220% 220%;
+  background-position: 0% 50%;
+  opacity: 0.85;
+  animation: lk-bg-drift 24s ease-in-out infinite alternate;
+}
+
+.lk-panel--left::before {
+  background-image: linear-gradient(
+    125deg,
+    rgba(241, 239, 233, 0) 0%,
+    rgba(203, 221, 189, 0.5) 22%,
+    rgba(174, 194, 255, 0.32) 48%,
+    rgba(221, 235, 207, 0.55) 74%,
+    rgba(241, 239, 233, 0) 100%
+  );
+}
+
+.lk-panel--right::before {
+  background-image: linear-gradient(
+    125deg,
+    rgba(241, 239, 233, 0) 0%,
+    rgba(240, 205, 180, 0.5) 22%,
+    rgba(174, 194, 255, 0.28) 48%,
+    rgba(247, 221, 204, 0.55) 74%,
+    rgba(241, 239, 233, 0) 100%
+  );
+}
+
+@keyframes lk-bg-drift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 30% 100%;
+  }
+}
+
 /* ---- PANEL INNER (centered editorial column) ---- */
+/* margin-block:auto centers it when there's room, and lets it scroll (no clip)
+   when the content is taller than the viewport (e.g. on zoom / short screens) */
 .lk-panel-inner {
   position: relative;
   z-index: 1;
   width: 100%;
   max-width: 1120px;
-  max-height: 100%;
-  overflow: hidden;
+  margin-block: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -198,25 +251,128 @@ body.lk-active {
   will-change: transform;
 }
 
-.lk-panel-accent {
+/* ---- ORGANIC PAINT SPLASH / AURA (behind section content) ---- */
+.lk-hero {
+  position: relative;
+  /* same periwinkle identity, now with depth: soft top highlight + bottom tint */
+  background:
+    radial-gradient(125% 90% at 50% 12%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 58%),
+    radial-gradient(120% 130% at 50% 118%, rgba(150, 176, 247, 0.55), rgba(150, 176, 247, 0) 56%),
+    linear-gradient(180deg, #B7C8FF 0%, #AEC2FF 52%, #A4B9FB 100%);
+  border-radius: clamp(20px, 2.2vw, 28px);
+  box-shadow:
+    0 28px 70px -34px rgba(22, 22, 29, 0.32),
+    0 8px 24px -16px rgba(22, 22, 29, 0.18),
+    0 1px 0 rgba(255, 255, 255, 0.55) inset,
+    0 0 0 1px rgba(255, 255, 255, 0.34) inset;
+}
+
+/* very subtle grain so the surface is not perfectly flat (no dependency) */
+.lk-hero::after {
+  content: '';
   position: absolute;
-  top: -4%;
-  left: 50%;
-  margin-left: -160px;
-  width: 320px;
-  height: 220px;
-  background: radial-gradient(circle, rgba(174, 194, 255, 0.18), transparent 70%);
-  filter: blur(30px);
-  pointer-events: none;
+  inset: 0;
   z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0.05;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-.lk-panel--left .lk-panel-accent {
-  background: radial-gradient(circle, rgba(203, 221, 189, 0.30), transparent 70%);
+.lk-hero-inner,
+.lk-mock {
+  position: relative;
+  z-index: 1;
 }
 
-.lk-panel--right .lk-panel-accent {
-  background: radial-gradient(circle, rgba(240, 205, 180, 0.30), transparent 70%);
+/* preview card: lift it off the blue with a soft, realistic shadow + top sheen */
+.lk-mock {
+  border-color: rgba(22, 22, 29, 0.88);
+  box-shadow:
+    0 22px 46px -26px rgba(22, 22, 29, 0.4),
+    0 6px 16px -10px rgba(22, 22, 29, 0.16),
+    0 1px 0 rgba(255, 255, 255, 0.95) inset;
+}
+
+/* primary CTA = the protagonist: subtle depth + lit edge, sinks on press */
+.lk .lk-btn-primary {
+  box-shadow:
+    0 12px 26px -14px rgba(22, 22, 29, 0.5),
+    0 1px 0 rgba(255, 255, 255, 0.12) inset;
+}
+
+.lk .lk-btn-primary:hover {
+  box-shadow:
+    0 14px 28px -14px rgba(22, 22, 29, 0.3),
+    0 1px 0 rgba(255, 255, 255, 0.3) inset;
+}
+
+.lk .lk-btn-primary:active {
+  box-shadow:
+    0 6px 14px -10px rgba(22, 22, 29, 0.42),
+    0 1px 0 rgba(255, 255, 255, 0.12) inset;
+}
+
+/* ---- SOFT LOCALISED GLOWS INSIDE THE HERO (behind content) ---- */
+.lk-hero-glow {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(46px);
+}
+
+.lk-hero-glow--title {
+  top: clamp(8%, 12%, 16%);
+  left: 50%;
+  width: min(58%, 460px);
+  height: clamp(140px, 24vh, 240px);
+  transform: translateX(-50%);
+  background: radial-gradient(closest-side, rgba(232, 238, 255, 0.85), rgba(232, 238, 255, 0) 72%);
+}
+
+.lk-hero-glow--card {
+  bottom: 4%;
+  left: 50%;
+  width: min(52%, 420px);
+  height: clamp(120px, 22vh, 220px);
+  transform: translateX(-50%);
+  background: radial-gradient(closest-side, rgba(203, 221, 189, 0.5), rgba(240, 205, 180, 0.32) 55%, rgba(203, 221, 189, 0) 75%);
+}
+
+.lk-blob-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ~30% of the central area; oversized viewBox keeps the blur from clipping */
+.lk-blob {
+  width: min(54vh, 46vw);
+  height: min(50vh, 42vw);
+  overflow: visible;
+  opacity: 0.92;
+  filter: blur(20px);
+  will-change: transform;
+}
+
+.lk-blob--center {
+  margin-top: -2%;
+}
+
+.lk-blob--left {
+  margin-left: -7%;
+  margin-top: -3%;
+}
+
+.lk-blob--right {
+  margin-left: 7%;
+  margin-top: -3%;
 }
 
 /* section colors used as real accents (eyebrow pill, chips, list markers) */
@@ -318,6 +474,67 @@ body.lk-active {
   transition: color 160ms ease;
 }
 
+/* ---- SECTION VISUAL UPGRADE (depth, designed numbers, connector, dots) ---- */
+.lk-step,
+.lk-panel-card {
+  border-radius: 20px;
+  box-shadow:
+    0 16px 34px -24px rgba(22, 22, 29, 0.3),
+    0 1px 0 rgba(255, 255, 255, 0.85) inset;
+}
+
+/* designed step number: a pastel badge instead of loose 36px text */
+.lk-step-n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  font-size: 18px;
+  background: #E9F2E2;
+  border: 1.5px solid #BBD3A6;
+  box-shadow: 0 6px 14px -10px rgba(22, 22, 29, 0.3);
+}
+
+/* subtle dashed line linking the four steps (desktop only) */
+.lk-panel--left .lk-panel-grid {
+  position: relative;
+}
+
+.lk-panel--left .lk-panel-grid::before {
+  content: '';
+  position: absolute;
+  left: 9%;
+  right: 9%;
+  top: 44px;
+  border-top: 2px dashed rgba(22, 22, 29, 0.16);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.lk-panel--left .lk-step {
+  position: relative;
+  z-index: 1;
+}
+
+/* decorative pastel dot inside the right-section cards */
+.lk-panel--right .lk-panel-card {
+  position: relative;
+}
+
+.lk-panel--right .lk-panel-card::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #F0CDB4;
+  box-shadow: 0 0 0 4px rgba(240, 205, 180, 0.22);
+}
+
 @media (hover: hover) and (pointer: fine) {
   .lk-panel--left .lk-step:hover {
     background-color: #E8F1DF;
@@ -395,22 +612,29 @@ body.lk-active {
   background: #FCFBF8;
 }
 
-/* ---- FEATURE LIST ---- */
+/* ---- FEATURE LIST (now a soft editorial panel, not floating text) ---- */
 .lk-panel-list {
   list-style: none;
-  padding: 0;
   margin: 30px auto 0;
-  max-width: 460px;
+  max-width: 540px;
   width: 100%;
   text-align: left;
   display: grid;
-  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 28px;
+  padding: clamp(20px, 2.4vw, 28px) clamp(22px, 2.8vw, 32px);
+  background: #FCFBF8;
+  border: 1.5px solid rgba(22, 22, 29, 0.1);
+  border-radius: 20px;
+  box-shadow:
+    0 18px 38px -26px rgba(22, 22, 29, 0.3),
+    0 1px 0 rgba(255, 255, 255, 0.85) inset;
 }
 
 .lk-panel-list li {
   position: relative;
-  padding-left: 26px;
-  font-size: 15px;
+  padding-left: 24px;
+  font-size: 14.5px;
   font-weight: 600;
   color: #16161D;
 }
@@ -419,11 +643,12 @@ body.lk-active {
   content: '';
   position: absolute;
   left: 0;
-  top: 7px;
-  width: 11px;
-  height: 11px;
+  top: 6px;
+  width: 10px;
+  height: 10px;
   border-radius: 4px;
-  background: #16161D;
+  background: #F0CDB4;
+  box-shadow: 0 0 0 3px rgba(240, 205, 180, 0.28);
 }
 
 /* ---- DOWN SECTION ---- */
@@ -444,14 +669,18 @@ body.lk-active {
   width: 50px;
   height: 50px;
   padding: 0;
-  border: 1.5px solid rgba(22, 22, 29, 0.16);
+  border: 1px solid rgba(22, 22, 29, 0.1);
   border-radius: 999px;
   background: #FCFBF8;
   color: #16161D;
   cursor: pointer;
-  opacity: 0.78;
+  opacity: 0.92;
+  box-shadow:
+    0 10px 24px -12px rgba(22, 22, 29, 0.3),
+    0 1px 0 rgba(255, 255, 255, 0.8) inset;
   transition:
     transform 210ms var(--lk-ease-out),
+    box-shadow 180ms ease,
     background-color 180ms ease,
     border-color 180ms ease,
     opacity 180ms ease;
@@ -500,7 +729,10 @@ body.lk-active {
 
 @media (hover: hover) and (pointer: fine) {
   .lk-arrow:hover {
-    opacity: 0.98;
+    opacity: 1;
+    box-shadow:
+      0 14px 30px -12px rgba(22, 22, 29, 0.36),
+      0 1px 0 rgba(255, 255, 255, 0.85) inset;
   }
 
   .lk-arrow--left:hover {
@@ -532,8 +764,34 @@ body.lk-active {
   transform: scale(0.98);
 }
 
-/* ---- RESPONSIVE: short viewports compress further ---- */
-@media (max-height: 760px) {
+/* ---- RESPONSIVE: short viewports compress scale, not spacing intent ---- */
+@media (max-height: 820px) {
+  .lk-nav-wrap {
+    padding-top: 8px;
+  }
+
+  .lk-hero {
+    margin-top: 10px;
+    padding-block: clamp(26px, 4vh, 36px) clamp(32px, 4.8vh, 44px);
+    gap: clamp(16px, 2.5vh, 24px);
+  }
+
+  .lk-eyebrow {
+    margin-bottom: clamp(6px, 1vh, 10px);
+  }
+
+  .lk-sub {
+    margin-top: clamp(6px, 1vh, 10px);
+  }
+
+  .lk-cta-row {
+    margin-top: clamp(10px, 1.7vh, 16px);
+  }
+
+  .lk-microcopy {
+    margin-top: clamp(6px, 1vh, 10px);
+  }
+
   .lk-h1 {
     font-size: clamp(24px, 4.2vh, 44px);
   }
@@ -545,16 +803,32 @@ body.lk-active {
   .lk-mock {
     max-width: clamp(280px, 40vh, 360px);
   }
+
+  .lk-foot--min {
+    padding-block: 10px 18px;
+  }
 }
 
 /* ---- RESPONSIVE: width ---- */
 @media (max-width: 820px) {
+  .lk-hero {
+    padding-block: clamp(30px, 5vh, 50px) clamp(36px, 5.8vh, 58px);
+    padding-inline: 18px;
+    margin: clamp(10px, 1.4vh, 16px) 12px;
+    gap: clamp(18px, 3vh, 30px);
+  }
+
   .lk-panel {
     padding: clamp(64px, 7vh, 92px) 18px 48px;
   }
 
   .lk-panel-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* the connector line only reads with a single row of 4 steps */
+  .lk-panel--left .lk-panel-grid::before {
+    display: none;
   }
 }
 
@@ -563,8 +837,17 @@ body.lk-active {
     display: none;
   }
 
-  .lk-section-lines {
-    display: none;
+  /* simpler, smaller splash so it never crowds the content on phones */
+  .lk-blob {
+    width: min(62vw, 320px);
+    height: min(58vw, 300px);
+    filter: blur(16px);
+    opacity: 0.8;
+  }
+
+  .lk-blob--left,
+  .lk-blob--right {
+    margin-left: 0;
   }
 
   /* arrows become a minimal, touch-friendly bottom row */
@@ -594,20 +877,26 @@ body.lk-active {
     margin-left: -25px;
   }
 
-  .lk {
-    display: block;
-    height: 100%;
+  /* on phones (touch) allow vertical scroll, leaving room for the arrow row */
+  .lk-world-center {
     overflow-y: auto;
-    padding-bottom: 88px;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
+  }
+
+  .lk {
+    min-height: 100%;
+    height: auto;
+    overflow: visible;
+    padding-bottom: 84px;
   }
 
   .lk-hero {
-    align-self: start;
-    justify-content: flex-start;
-    overflow: visible;
-    margin: 10px 12px 18px;
-    padding: clamp(22px, 4vh, 34px) 16px;
+    flex: 0 0 auto;
+    justify-content: center;
+    margin: 10px 12px;
+    padding-block: clamp(24px, 4vh, 34px) clamp(30px, 4.8vh, 40px);
+    padding-inline: 16px;
+    gap: clamp(16px, 2.6vh, 24px);
   }
 
   .lk-mock {
@@ -620,23 +909,46 @@ body.lk-active {
   }
 
   .lk-panel {
-    align-items: flex-start;
-    overflow-y: auto;
     padding-bottom: 96px;
     -webkit-overflow-scrolling: touch;
   }
 
-  .lk-panel-inner {
-    max-height: none;
-    overflow: visible;
-  }
-
   .lk-foot--min {
-    padding-bottom: 96px;
+    display: none;
   }
 }
 
 @media (max-width: 520px) {
+  .lk-h1 {
+    font-size: clamp(32px, 10.8vw, 46px);
+    line-height: 1.05;
+  }
+
+  .lk-panel-list {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .lk-sub {
+    font-size: 1rem;
+  }
+
+  .lk-cta-row {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .lk-cta-row .lk-btn-hero,
+  .lk-cta-row .lk-btn-lg {
+    width: min(100%, 320px);
+    min-width: 0;
+  }
+
+  .lk-mock {
+    max-width: min(100%, 340px);
+  }
+
   .lk-panel-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
@@ -672,8 +984,7 @@ body.lk-active {
 
 /* ---- REDUCED MOTION ---- */
 @media (prefers-reduced-motion: reduce) {
-  .lk-organic-ribbon,
-  .lk-organic-spine,
+  .lk-organic-line,
   .lk-arrow,
   .lk-panel-card,
   .lk-step {
@@ -686,8 +997,12 @@ body.lk-active {
   }
 
   .lk-parallax,
-  .lk-panel-accent {
+  .lk-blob {
     transform: none !important;
+  }
+
+  .lk-panel::before {
+    animation: none !important;
   }
 
   .lk-world-center {

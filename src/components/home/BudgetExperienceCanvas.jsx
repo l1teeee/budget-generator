@@ -5,22 +5,24 @@ import LeftSection from './LeftSection'
 import RightSection from './RightSection'
 import MinimalSvgArrowButton from './MinimalSvgArrowButton'
 import CreativeConnectorLines from './CreativeConnectorLines'
-import SectionConnectorLine from './SectionConnectorLine'
+import SectionBlob from './SectionBlob'
 
 const EASE = [0.22, 1, 0.36, 1]
-const sectionTransition = { duration: 0.7, ease: EASE }
+const sectionTransition = { duration: 0.55, ease: EASE }
 const PARALLAX_MAX = 18
 
+// directional slide: left section enters from the left, right from the right.
+// a subtle blur masks the slide so it reads as one smooth motion (not two layers).
 const panelVariants = {
   left: {
-    initial: { opacity: 0, x: '-8vw', scale: 0.99 },
-    animate: { opacity: 1, x: 0, scale: 1 },
-    exit: { opacity: 0, x: '-8vw', scale: 0.99 },
+    initial: { opacity: 0, x: '-7vw', scale: 0.985, filter: 'blur(5px)' },
+    animate: { opacity: 1, x: 0, scale: 1, filter: 'blur(0px)' },
+    exit: { opacity: 0, x: '-7vw', scale: 0.985, filter: 'blur(5px)' },
   },
   right: {
-    initial: { opacity: 0, x: '8vw', scale: 0.99 },
-    animate: { opacity: 1, x: 0, scale: 1 },
-    exit: { opacity: 0, x: '8vw', scale: 0.99 },
+    initial: { opacity: 0, x: '7vw', scale: 0.985, filter: 'blur(5px)' },
+    animate: { opacity: 1, x: 0, scale: 1, filter: 'blur(0px)' },
+    exit: { opacity: 0, x: '7vw', scale: 0.985, filter: 'blur(5px)' },
   },
 }
 
@@ -29,6 +31,7 @@ const PANEL_LABEL = {
   right: 'Que cubre',
 }
 
+// the section sits on this side; return points back toward the center
 const BACK_DIR = { left: 'right', right: 'left' }
 
 function getPanelMotion(panel, reduced) {
@@ -57,11 +60,13 @@ export default function BudgetExperienceCanvas({ children }) {
   const [hovered, setHovered] = useState(null)
   const open = active !== 'center'
 
+  // center drifts opposite to the incoming panel for a directional, parallax feel
+  const centerShift = active === 'right' ? '-3.5vw' : active === 'left' ? '3.5vw' : 0
   const centerAnim = reduced
     ? { opacity: open ? 0.6 : 1 }
     : open
-      ? { scale: 0.99, opacity: 0.5, filter: 'blur(2px)' }
-      : { scale: 1, opacity: 1, filter: 'blur(0px)' }
+      ? { x: centerShift, scale: 0.985, opacity: 0.5, filter: 'blur(2px)' }
+      : { x: 0, scale: 1, opacity: 1, filter: 'blur(0px)' }
   const centerTransition = reduced ? { duration: 0 } : sectionTransition
   const panelMotion = open ? getPanelMotion(active, reduced) : null
   const panelTransition = reduced ? { duration: 0 } : sectionTransition
@@ -146,7 +151,9 @@ export default function BudgetExperienceCanvas({ children }) {
             exit={panelMotion.exit}
             transition={panelTransition}
           >
-            <SectionConnectorLine direction={active} reduced={reduced} isHovered={hovered === BACK_DIR[active]} />
+            <div className="lk-blob-wrap" aria-hidden="true">
+              <SectionBlob variant={active} parallax depth={0.22} />
+            </div>
             {renderPanel(active, reduced)}
           </motion.div>
         )}
