@@ -22,16 +22,15 @@ export default function RightSection({ reduced }) {
   return (
     <SideSection eyebrow="What it covers" title="Built for real quotes." reduced={reduced}>
       <motion.p className="lk-panel-sub" variants={item}>Flexible pricing models for any kind of work.</motion.p>
-      <motion.div className="lk-panel-grid" variants={item}>
+      <motion.div className="lk-spec-grid" variants={item}>
         {TYPES.map(([t, s]) => (
-          <div className="lk-panel-card" key={t} role="group" tabIndex={0} aria-label={t + ': ' + s}>
-            <strong>{t}</strong>
-            <span>{s}</span>
+          <div className="lk-specx" key={t}>
+            <strong className="lk-specx-label">{t}</strong>
+            <span className="lk-specx-value">{s}</span>
           </div>
         ))}
       </motion.div>
-
-      <motion.ul className="lk-panel-list" variants={item}>
+      <motion.ul className="lk-feature-grid" variants={item}>
         {FEATURES.map((f) => (
           <li key={f}>{f}</li>
         ))}

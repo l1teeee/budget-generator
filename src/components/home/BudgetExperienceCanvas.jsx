@@ -5,7 +5,6 @@ import LeftSection from './LeftSection'
 import RightSection from './RightSection'
 import MinimalSvgArrowButton from './MinimalSvgArrowButton'
 import CreativeConnectorLines from './CreativeConnectorLines'
-import SectionBlob from './SectionBlob'
 
 const EASE = [0.22, 1, 0.36, 1]
 const sectionTransition = { duration: 0.55, ease: EASE }
@@ -151,9 +150,6 @@ export default function BudgetExperienceCanvas({ children }) {
             exit={panelMotion.exit}
             transition={panelTransition}
           >
-            <div className="lk-blob-wrap" aria-hidden="true">
-              <SectionBlob variant={active} parallax depth={0.22} />
-            </div>
             {renderPanel(active, reduced)}
           </motion.div>
         )}
