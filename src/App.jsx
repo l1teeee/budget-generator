@@ -1,69 +1,18 @@
-import { useRef, useState } from 'react'
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { useState } from 'react'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { FormProvider, useFormStore } from './hooks/useFormStore'
 import { usePageNav } from './hooks/usePageNav'
 import HomePage from './components/home/HomePage'
 import PageTransition from './components/layout/PageTransition'
-import StatusBar from './components/layout/StatusBar'
-import StepProgress from './components/layout/StepProgress'
-import FormStep1 from './components/form/FormStep1'
-import FormStep2 from './components/form/FormStep2'
-import FormStep3 from './components/form/FormStep3'
-import FormStep4 from './components/form/FormStep4'
-import TemplatePreview from './components/preview/TemplatePreview'
-import JsonPanel from './components/form/JsonPanel'
-import BrandDrawer from './components/form/BrandDrawer'
+import FullScreenWizard from './components/form/FullScreenWizard'
 import StartModeSelector from './components/intake/StartModeSelector'
 import JsonIntake from './components/intake/JsonIntake'
 import ContextIntake from './components/intake/ContextIntake'
 import IntakeReview from './components/intake/IntakeReview'
-import MissingQuestionsPanel from './components/intake/MissingQuestionsPanel'
+import ExportsPage from './components/exports/ExportsPage'
 import { getQuoteCompleteness } from './lib/quoteCompleteness'
 import { mergeQuoteDraft } from './lib/intakeMapper'
-
-function Shell({ onHome }) {
-  const { step } = useFormStore()
-  const previewRef = useRef(null)
-  const [jsonOpen, setJsonOpen] = useState(false)
-  const [brandOpen, setBrandOpen] = useState(false)
-
-  const steps = {
-    1: <FormStep1 />,
-    2: <FormStep2 />,
-    3: <FormStep3 />,
-    4: <FormStep4 previewRef={previewRef} onOpenJson={() => setJsonOpen(true)} />,
-  }
-
-  return (
-    <div className="app-shell">
-      <StatusBar onHome={onHome} onOpenBrand={() => setBrandOpen(true)} onOpenJson={() => setJsonOpen(true)} />
-
-      <main className="app-main">
-        <section className="workflow-column" aria-label="Budget wizard">
-          <StepProgress />
-
-          <div
-            key={step}
-            className="editor-panel scroll-thin"
-          >
-            <MissingQuestionsPanel />
-            {steps[step]}
-          </div>
-        </section>
-
-        <aside className="preview-panel" aria-label="Live budget preview">
-          <div className="preview-panel-head">
-            <strong>Preview</strong>
-          </div>
-          <TemplatePreview previewRef={previewRef} />
-        </aside>
-      </main>
-
-      {jsonOpen && <JsonPanel open onClose={() => setJsonOpen(false)} />}
-      {brandOpen && <BrandDrawer open onClose={() => setBrandOpen(false)} />}
-    </div>
-  )
-}
+import { loadExports } from './lib/exportHistory'
 
 function IntakeFlow({ onHome, onWizard }) {
   const { state, applyQuoteDraft, setStep } = useFormStore()
@@ -143,9 +92,17 @@ function AppRoutes() {
   return (
     <PageTransition key={location.pathname}>
       <Routes>
-        <Route path="/" element={<HomePage onStart={() => goTo('/intake')} />} />
+        <Route
+          path="/"
+          element={
+            loadExports().length > 0
+              ? <Navigate to="/exports" replace />
+              : <HomePage onStart={() => goTo('/intake')} />
+          }
+        />
         <Route path="/intake" element={<IntakeFlow onHome={() => goTo('/')} onWizard={() => goTo('/wizard')} />} />
-        <Route path="/wizard" element={<Shell onHome={() => goTo('/')} />} />
+        <Route path="/wizard" element={<FullScreenWizard onHome={() => goTo('/')} />} />
+        <Route path="/exports" element={<ExportsPage onHome={() => goTo('/')} onNewQuote={() => goTo('/intake')} />} />
       </Routes>
     </PageTransition>
   )

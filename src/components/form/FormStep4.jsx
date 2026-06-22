@@ -11,6 +11,8 @@ const TEMPLATES = [
   { id: 'ledger', name: 'Ledger', desc: 'tabular financial sheet' },
   { id: 'statement', name: 'Statement', desc: 'editorial block header' },
 ]
+const ACTIVE_BORDER = '#7E98F2'
+const SOFT_BORDER = 'rgba(92,99,122,0.24)'
 
 export default function FormStep4({ previewRef, onOpenJson }) {
   const { state, update, setTemplate, goPrev } = useFormStore()
@@ -28,7 +30,7 @@ export default function FormStep4({ previewRef, onOpenJson }) {
           marginBottom: '22px',
           padding: '16px',
           background: ready ? '#EAEEFB' : '#F6F4EE',
-          border: '1.5px solid rgba(22,22,29,0.18)',
+          border: `1.5px solid ${SOFT_BORDER}`,
           borderRadius: '16px',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center' }}>
@@ -70,7 +72,7 @@ export default function FormStep4({ previewRef, onOpenJson }) {
                   alignItems: 'center',
                   gap: '12px',
                   padding: '14px 16px',
-                  border: `1.5px solid ${active ? '#16161D' : 'rgba(22,22,29,0.16)'}`,
+                  border: `1.5px solid ${active ? ACTIVE_BORDER : SOFT_BORDER}`,
                   background: active ? '#EAEEFB' : '#FCFBF8',
                   borderRadius: '16px',
                 }}
@@ -83,7 +85,7 @@ export default function FormStep4({ previewRef, onOpenJson }) {
                   height: '20px',
                   flexShrink: 0,
                   borderRadius: '7px',
-                  border: active ? '1px solid #16161D' : '1px solid rgba(22,22,29,0.28)',
+                  border: `1px solid ${active ? ACTIVE_BORDER : SOFT_BORDER}`,
                   background: active ? '#AEC2FF' : '#ffffff',
                 }}>
                   {active && (
@@ -121,7 +123,7 @@ export default function FormStep4({ previewRef, onOpenJson }) {
             textTransform: 'uppercase',
             color: '#16161D',
             background: '#EAEEFB',
-            border: '1.5px solid rgba(22,22,29,0.14)',
+            border: `1.5px solid ${SOFT_BORDER}`,
             borderRadius: '999px',
             padding: '9px 16px',
             display: 'inline-flex',

@@ -1,63 +1,57 @@
-import { useRef } from 'react'
+import { useState } from 'react'
 import { useFormStore } from '../../hooks/useFormStore'
 import { usePDFExport } from '../../hooks/usePDFExport'
-import { usePDFButtonHover } from '../../hooks/useAnimations'
+import { usePageNav } from '../../hooks/usePageNav'
 import { getQuoteCompleteness } from '../../lib/quoteCompleteness'
+import { OriginButton } from './origin-button'
 
 export default function PDFButton({ previewRef }) {
-  const { state } = useFormStore()
+  const { state, totals } = useFormStore()
   const { exportPDF, exporting } = usePDFExport()
+  const { goTo } = usePageNav()
+  const [exported, setExported] = useState(false)
   const completeness = getQuoteCompleteness(state)
   const blocked = !completeness.complete
-  const btnRef = useRef(null)
-  const fillRef = useRef(null)
-  const labelRef = useRef(null)
-  usePDFButtonHover(btnRef, fillRef, labelRef)
+
+  const onClick = async () => {
+    if (blocked || exporting || exported) return
+    const entry = await exportPDF(previewRef, state.client.name, state, totals)
+    if (!entry) return
+    setExported(true)
+    setTimeout(() => goTo('/exports'), 900)
+  }
+
+  const vars = blocked
+    ? {
+        '--ob-bg': '#E9E6DE',
+        '--ob-text': '#565563',
+        '--ob-fill': '#16161D',
+        '--ob-text-filled': '#AEC2FF',
+        '--ob-border': 'rgba(92,99,122,0.24)',
+      }
+    : exported
+    ? {
+        '--ob-bg': '#DCFCE7',
+        '--ob-text': '#15803D',
+        '--ob-fill': '#166534',
+        '--ob-text-filled': '#F1EFE9',
+        '--ob-border': '#86EFAC',
+      }
+    : {
+        '--ob-bg': '#F0FDF4',
+        '--ob-text': '#15803D',
+        '--ob-fill': '#166534',
+        '--ob-text-filled': '#F1EFE9',
+        '--ob-border': '#86EFAC',
+      }
 
   return (
-    <button
-      ref={btnRef}
-      onClick={() => exportPDF(previewRef, state.client.name)}
+    <OriginButton
+      onClick={onClick}
       disabled={exporting || blocked}
-      style={{
-        position: 'relative',
-        overflow: 'hidden',
-        cursor: exporting ? 'wait' : blocked ? 'not-allowed' : 'pointer',
-        border: '1.5px solid #16161D',
-        borderRadius: '999px',
-        background: blocked ? '#E9E6DE' : '#16161D',
-        padding: '15px 24px',
-        width: '100%',
-        opacity: blocked ? 0.72 : 1,
-        boxShadow: blocked
-          ? 'none'
-          : '0 14px 28px -16px rgba(22,22,29,0.5), 0 1px 0 rgba(255,255,255,0.12) inset',
-      }}
+      style={vars}
     >
-      <span
-        ref={fillRef}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: '#AEC2FF',
-          transform: 'scaleX(0)',
-          transformOrigin: 'left',
-          pointerEvents: 'none',
-        }}
-      />
-      <span
-        ref={labelRef}
-        style={{
-          position: 'relative',
-          fontSize: '12px',
-          fontWeight: 800,
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-          color: blocked ? '#565563' : '#F1EFE9',
-        }}
-      >
-        {exporting ? 'rendering...' : blocked ? 'complete required fields' : 'export pdf'}
-      </span>
-    </button>
+      {exported ? '✓ exported' : exporting ? 'rendering...' : blocked ? 'complete required fields' : 'export pdf'}
+    </OriginButton>
   )
 }

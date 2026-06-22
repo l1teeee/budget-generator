@@ -53,7 +53,7 @@ body.lk-active #root {
 /* focus visibility for all interactive elements */
 .lk button:focus-visible,
 .lk a:focus-visible {
-  outline: 2px solid #16161D;
+  outline: 2px solid #6F86D9;
   outline-offset: 3px;
 }
 
@@ -187,7 +187,7 @@ body.lk-active #root {
 .lk-btn-primary {
   background: #16161D;
   color: #F1EFE9;
-  border-color: #16161D;
+  border-color: transparent;
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease,
@@ -195,7 +195,7 @@ body.lk-active #root {
 }
 .lk-btn-primary:hover {
   background: #AEC2FF;
-  border-color: #16161D;
+  border-color: #7E98F2;
   color: #16161D;
 }
 .lk-btn-primary:focus-visible {
@@ -204,7 +204,7 @@ body.lk-active #root {
 
 .lk-btn-ghost {
   background: transparent;
-  border: 1.5px solid #16161D;
+  border: 1.5px solid rgba(92, 99, 122, 0.24);
   color: #16161D;
   transition:
     background-color 0.2s ease,
@@ -659,7 +659,7 @@ body.lk-active #root {
   }
 
   .lk-mock:hover {
-    border-color: #16161D;
+    border-color: #7E98F2;
   }
 
   .lk-mock-field:hover,

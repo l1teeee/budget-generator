@@ -12,6 +12,8 @@ const STEP_COLORS = {
   inkSoft: '#1D1D26',
   muted: '#565563',
   blue: '#AEC2FF',
+  border: '#7E98F2',
+  borderSoft: 'rgba(92,99,122,0.24)',
 }
 
 function prefersReduced() {
@@ -227,7 +229,7 @@ export function useHomeAnimations(scopeRef) {
         const enter = () => {
           gsap.to(card, {
             backgroundColor: STEP_COLORS.blue,
-            borderColor: STEP_COLORS.ink,
+            borderColor: STEP_COLORS.border,
             y: -4,
             duration: 0.24,
             ease: 'power3.out',
@@ -252,7 +254,7 @@ export function useHomeAnimations(scopeRef) {
         const leave = () => {
           gsap.to(card, {
             backgroundColor: STEP_COLORS.paper,
-            borderColor: STEP_COLORS.ink,
+            borderColor: STEP_COLORS.borderSoft,
             y: 0,
             duration: 0.26,
             ease: 'power3.out',

@@ -2,11 +2,13 @@ import { useState } from 'react'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 import { PDF_CONFIG } from '../constants/pdfConfig'
+import { saveExport } from '../lib/exportHistory'
 
 export function usePDFExport() {
   const [exporting, setExporting] = useState(false)
+  const [lastExport, setLastExport] = useState(null)
 
-  const exportPDF = async (elementRef, clientName) => {
+  const exportPDF = async (elementRef, clientName, state, totals) => {
     const el = elementRef.current
     if (!el || exporting) return
     setExporting(true)
@@ -29,11 +31,15 @@ export function usePDFExport() {
 
       const date = new Date().toISOString().split('T')[0]
       const safe = (clientName || 'cliente').trim().replace(/\s+/g, '-').toLowerCase() || 'cliente'
-      pdf.save(`presupuesto-${safe}-${date}.pdf`)
+      const filename = `presupuesto-${safe}-${date}.pdf`
+      pdf.save(filename)
+      const entry = saveExport(state, totals, filename)
+      setLastExport(entry)
+      return entry
     } finally {
       setExporting(false)
     }
   }
 
-  return { exportPDF, exporting }
+  return { exportPDF, exporting, lastExport }
 }

@@ -1,4 +1,5 @@
 import { useFormStore } from '../../hooks/useFormStore'
+import { Input } from '../ui/input'
 
 export default function CustomServiceRow({ service, symbol }) {
   const { updateCustomService, removeCustomService } = useFormStore()
@@ -24,7 +25,8 @@ export default function CustomServiceRow({ service, symbol }) {
       }}>
         +
       </span>
-      <input
+      <Input
+        className="wiz-custom-name-input"
         placeholder="service name"
         value={service.name}
         onChange={e => updateCustomService(service.id, 'name', e.target.value)}
@@ -35,7 +37,8 @@ export default function CustomServiceRow({ service, symbol }) {
           color: '#16161D',
         }}
       />
-      <input
+      <Input
+        className="wiz-custom-qty-input"
         type="number"
         min="0"
         placeholder="qty"
@@ -66,7 +69,8 @@ export default function CustomServiceRow({ service, symbol }) {
         padding: '4px 8px',
       }}>
         <span style={{ fontSize: '12px', fontWeight: 800, color: '#8A8794' }}>{symbol}</span>
-        <input
+        <Input
+          className="wiz-custom-price-input"
           type="number"
           min="0"
           placeholder="0"

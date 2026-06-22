@@ -10,6 +10,10 @@
   --faint: #8A8794;
   --border: rgba(22, 22, 29, 0.16);
   --border-strong: rgba(22, 22, 29, 0.34);
+  --border-panel: rgba(92, 99, 122, 0.24);
+  --border-panel-hover: rgba(92, 99, 122, 0.34);
+  --border-active: #7E98F2;
+  --focus-ring: #6F86D9;
   --accent: #AEC2FF;
   --accent-2: #9CB4F7;
   --accent-soft: #EAEEFB;
@@ -63,6 +67,12 @@
   --color-ink: #16161D;
   --color-accent: #AEC2FF;
   --color-accent-soft: #EAEEFB;
+  --color-background: #FCFBF8;
+  --color-foreground: #16161D;
+  --color-input: #D7D3CA;
+  --color-ring: #AEC2FF;
+  --color-muted-foreground: #565563;
+  --color-destructive: #B4564F;
   --font-mono: 'Hanken Grotesk', sans-serif;
   --font-display: 'Hanken Grotesk', sans-serif;
   --font-body: 'Hanken Grotesk', sans-serif;
@@ -97,6 +107,12 @@ input, textarea, select, button {
   border: none;
 }
 
+input:not([type='file']),
+textarea {
+  caret-color: var(--focus-ring);
+  cursor: text;
+}
+
 input::placeholder, textarea::placeholder {
   color: var(--faint);
 }
@@ -110,7 +126,7 @@ input:-webkit-autofill,
 input:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0 1000px var(--surface) inset !important;
   -webkit-text-fill-color: var(--ink) !important;
-  caret-color: var(--ink);
+  caret-color: var(--focus-ring);
 }
 
 .scroll-thin::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -147,7 +163,7 @@ button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 [data-link-card]:focus-visible {
-  outline: 2px solid #16161D;
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
 }
 
@@ -255,7 +271,7 @@ button:not(:disabled):active,
   display: flex;
   flex-direction: column;
   background: #FCFBF8;
-  border: 1.5px solid rgba(22, 22, 29, 0.86);
+  border: 1.5px solid var(--border-panel);
   border-radius: var(--r-xl);
   padding: clamp(24px, 3vw, 32px);
   box-shadow: var(--shadow-card);
@@ -326,7 +342,7 @@ button:not(:disabled):active,
   letter-spacing: 0.04em;
   color: #16161D;
   padding: 0 16px;
-  border: 1.5px solid rgba(22, 22, 29, 0.28);
+  border: 1.5px solid var(--border-panel);
   border-radius: 999px;
   background: #FCFBF8;
 }
@@ -337,7 +353,7 @@ button:not(:disabled):active,
   background:
     radial-gradient(125% 120% at 50% 0%, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 60%),
     linear-gradient(180deg, #B7C8FF 0%, #AEC2FF 58%, #A4B9FB 100%);
-  border: 1.5px solid rgba(22, 22, 29, 0.82);
+  border: 1.5px solid rgba(126, 152, 242, 0.54);
   border-radius: var(--r-xl);
   padding: clamp(16px, 2vw, 22px);
   display: grid;
@@ -381,7 +397,7 @@ button:not(:disabled):active,
 .step-fill {
   position: absolute;
   inset: 0;
-  background: #16161D;
+  background: #5F78D8;
   border-radius: 999px;
   transform-origin: left;
   transform: scaleX(0);
@@ -401,13 +417,13 @@ button:not(:disabled):active,
   flex: 1;
   padding: 9px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(22, 22, 29, 0.24);
+  border: 1px solid rgba(92, 99, 122, 0.24);
   background: rgba(252, 251, 248, 0.42);
 }
 
 .step-button.is-active {
   background: #FCFBF8;
-  border-color: #16161D;
+  border-color: var(--border-active);
   box-shadow:
     0 8px 18px -10px rgba(22, 22, 29, 0.3),
     0 1px 0 rgba(255, 255, 255, 0.85) inset;
@@ -427,7 +443,7 @@ button:not(:disabled):active,
   font-size: 11px;
   color: #565563;
   background: #FCFBF8;
-  border: 1px solid rgba(22, 22, 29, 0.18);
+  border: 1px solid rgba(92, 99, 122, 0.22);
   transition:
     color 180ms ease,
     transform 180ms var(--ease-out),
@@ -438,13 +454,18 @@ button:not(:disabled):active,
 .step-button.is-active .step-number {
   color: #16161D;
   background: #FCFBF8;
-  border-color: #16161D;
+  border-color: var(--border-active);
 }
 
 .step-button.is-done .step-number {
   color: #16161D;
   background: #EAEEFB;
-  border-color: rgba(22, 22, 29, 0.24);
+  border-color: var(--border-panel);
+}
+
+.step-button.is-active.is-done .step-number {
+  background: #FCFBF8;
+  border-color: var(--border-active);
 }
 
 .step-label {
@@ -608,7 +629,7 @@ button:not(:disabled):active,
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  border: 1.5px solid #16161D;
+  border: 1.5px solid var(--border-panel);
 }
 
 .step-nav-button-secondary {
@@ -620,6 +641,7 @@ button:not(:disabled):active,
   flex: 1;
   background: #16161D;
   color: #F1EFE9;
+  border-color: transparent;
   box-shadow:
     0 12px 26px -14px rgba(22, 22, 29, 0.5),
     0 1px 0 rgba(255, 255, 255, 0.12) inset;
@@ -760,7 +782,7 @@ button:not(:disabled):active,
   text-align: left;
   background: #FCFBF8;
   color: #16161D;
-  border: 1.5px solid rgba(22, 22, 29, 0.86);
+  border: 1.5px solid var(--border-panel);
   border-radius: var(--r-xl);
   box-shadow: var(--shadow-card);
   transition:
@@ -811,7 +833,7 @@ button:not(:disabled):active,
 
 .intake-panel {
   background: #FCFBF8;
-  border: 1.5px solid rgba(22, 22, 29, 0.86);
+  border: 1.5px solid var(--border-panel);
   border-radius: var(--r-xl);
   padding: 26px;
   box-shadow: var(--shadow-card);
@@ -872,7 +894,7 @@ button:not(:disabled):active,
 .intake-primary {
   background: #16161D;
   color: #F1EFE9;
-  border: 1.5px solid #16161D;
+  border: 1.5px solid transparent;
   box-shadow:
     0 12px 26px -14px rgba(22, 22, 29, 0.5),
     0 1px 0 rgba(255, 255, 255, 0.12) inset;
@@ -886,7 +908,7 @@ button:not(:disabled):active,
 .intake-ghost {
   background: transparent;
   color: #16161D;
-  border: 1.5px solid #16161D;
+  border: 1.5px solid var(--border-panel);
 }
 
 .file-trigger {
@@ -916,7 +938,7 @@ button:not(:disabled):active,
 .intake-review-hero,
 .intake-review-block {
   background: #FCFBF8;
-  border: 1.5px solid rgba(22, 22, 29, 0.86);
+  border: 1.5px solid var(--border-panel);
   border-radius: var(--r-xl);
   padding: 26px;
   box-shadow: var(--shadow-card);
@@ -1086,7 +1108,7 @@ button:not(:disabled):active,
 .missing-answer input:focus,
 .missing-answer select:focus {
   background: #FCFBF8;
-  border-color: #16161D;
+  border-color: var(--border-active);
   box-shadow: 0 0 0 4px rgba(174, 194, 255, 0.42);
 }
 
@@ -1108,17 +1130,17 @@ button:not(:disabled):active,
   .intake-review-hero:hover,
   .intake-review-block:hover,
   .missing-panel:hover {
-    border-color: rgba(22, 22, 29, 0.32);
+    border-color: var(--border-panel-hover);
   }
 
   .preview-stage:hover {
-    border-color: rgba(22, 22, 29, 0.28);
+    border-color: var(--border-panel-hover);
   }
 
   .step-button:hover .step-number {
     color: #16161D;
     background: #F6F4EE;
-    border-color: #16161D;
+    border-color: var(--border-active);
   }
 
   .step-button:hover .step-label,
@@ -1127,7 +1149,7 @@ button:not(:disabled):active,
   }
 
   .intake-card:hover {
-    border-color: #16161D;
+    border-color: var(--border-active);
   }
 
   .intake-card:not(.intake-card-primary):hover {
@@ -1141,7 +1163,7 @@ button:not(:disabled):active,
   .intake-textarea:hover,
   .missing-answer input:hover,
   .missing-answer select:hover {
-    border-color: rgba(22, 22, 29, 0.34);
+    border-color: var(--border-panel-hover);
   }
 }
 
@@ -1333,11 +1355,6 @@ button:not(:disabled):active,
   .file-trigger {
     width: 100%;
   }
-}
-
-@keyframes caret-blink {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

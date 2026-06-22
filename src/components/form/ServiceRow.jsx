@@ -1,6 +1,9 @@
 import { useFormStore } from '../../hooks/useFormStore'
+import { Input } from '../ui/input'
 
 const fmt = (n) => Number(n).toLocaleString('en-US')
+const ACTIVE_BORDER = '#7E98F2'
+const SOFT_BORDER = 'rgba(92,99,122,0.24)'
 
 export default function ServiceRow({ service, symbol }) {
   const { toggleService, updateServiceQuantity } = useFormStore()
@@ -24,7 +27,7 @@ export default function ServiceRow({ service, symbol }) {
         gap: '12px',
         padding: '11px 12px',
         marginBottom: '6px',
-        border: `1.5px solid ${on ? 'rgba(22,22,29,0.86)' : 'rgba(22,22,29,0.14)'}`,
+        border: `1.5px solid ${on ? ACTIVE_BORDER : SOFT_BORDER}`,
         background: on ? '#EEF1FC' : '#FCFBF8',
         borderRadius: '16px',
         boxShadow: on
@@ -43,7 +46,7 @@ export default function ServiceRow({ service, symbol }) {
         height: '20px',
         flexShrink: 0,
         borderRadius: '7px',
-        border: on ? '1.5px solid #16161D' : '1.5px solid rgba(22,22,29,0.34)',
+        border: `1.5px solid ${on ? ACTIVE_BORDER : SOFT_BORDER}`,
         background: '#ffffff',
       }}>
         {on && (
@@ -67,7 +70,8 @@ export default function ServiceRow({ service, symbol }) {
       </span>
 
       {on && (
-        <input
+        <Input
+          className="wiz-service-qty-input"
           type="number"
           min="1"
           value={service.quantity}
@@ -80,7 +84,7 @@ export default function ServiceRow({ service, symbol }) {
             fontSize: '12px',
             color: '#16161D',
             background: '#ffffff',
-            border: '1.5px solid rgba(22,22,29,0.18)',
+            border: `1.5px solid ${SOFT_BORDER}`,
             borderRadius: '999px',
             padding: '5px 0',
             fontVariantNumeric: 'tabular-nums',

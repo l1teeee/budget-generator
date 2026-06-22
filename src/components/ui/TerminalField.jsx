@@ -1,4 +1,9 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
+import { Input } from './input'
+import { Label } from './label'
+
+const ACTIVE_BORDER = '#7E98F2'
+const SOFT_BORDER = 'rgba(92,99,122,0.24)'
 
 export default function TerminalField({
   label,
@@ -11,15 +16,16 @@ export default function TerminalField({
   textarea = false,
   mono = false,
 }) {
+  const id = useId()
   const [focused, setFocused] = useState(false)
 
-  const borderColor = error ? '#d98a8a' : focused ? '#16161D' : 'rgba(22,22,29,0.18)'
+  const borderColor = error ? '#d98a8a' : focused ? ACTIVE_BORDER : SOFT_BORDER
   const labelColor = error ? '#b4564f' : focused ? '#16161D' : '#565563'
 
   return (
     <div data-animate style={{ marginBottom: '18px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '7px' }}>
-        <span style={{
+        <Label htmlFor={id} style={{
             fontFamily: "'Hanken Grotesk', sans-serif",
             fontSize: '9px',
             letterSpacing: '0.14em',
@@ -29,7 +35,7 @@ export default function TerminalField({
             transition: 'color 160ms ease',
         }}>
           {label}{required ? ' *' : ''}
-        </span>
+        </Label>
         {error && (
           <span style={{
             fontFamily: "'Hanken Grotesk', sans-serif",
@@ -53,9 +59,11 @@ export default function TerminalField({
         padding: textarea ? '12px 16px' : '11px 16px',
         transition: 'border-color 180ms ease, background-color 180ms ease',
         boxShadow: focused ? '0 0 0 4px rgba(174,194,255,0.32)' : 'none',
+        cursor: 'text',
       }}>
         {textarea ? (
           <textarea
+            id={id}
             value={value}
             onChange={onChange}
             onFocus={() => setFocused(true)}
@@ -69,16 +77,21 @@ export default function TerminalField({
               fontSize: '14px',
               lineHeight: 1.6,
               color: '#16161D',
+              outline: 'none',
+              caretColor: ACTIVE_BORDER,
+              cursor: 'text',
             }}
           />
         ) : (
-          <input
+          <Input
+            id={id}
             type={type}
             value={value}
             onChange={onChange}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             placeholder={placeholder}
+            className="h-auto border-0 bg-transparent p-0 shadow-none focus-visible:border-transparent focus-visible:ring-0"
             style={{
               flex: 1,
               fontFamily: 'inherit',
@@ -86,19 +99,10 @@ export default function TerminalField({
               fontWeight: mono ? 700 : 500,
               color: '#16161D',
               letterSpacing: '0',
+              caretColor: ACTIVE_BORDER,
+              cursor: 'text',
             }}
           />
-        )}
-
-        {focused && !textarea && (
-          <span style={{
-            width: '7px',
-            height: '15px',
-            borderRadius: '2px',
-            background: '#16161D',
-            animation: 'caret-blink 1.05s step-end infinite',
-            flexShrink: 0,
-          }} />
         )}
       </div>
     </div>

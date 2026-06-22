@@ -15,12 +15,12 @@ export default function LeftSection({ reduced }) {
   return (
     <SideSection eyebrow="How it works" title="Four steps to a clean budget." reduced={reduced}>
       <motion.p className="lk-panel-sub" variants={item}>From a blank page to a billable quote in minutes.</motion.p>
-      <motion.div className="lk-steps-strip" variants={item}>
+      <motion.div className="lk-step-grid" variants={item}>
         {STEPS.map(([n, name, status]) => (
-          <div className="lk-stepx" key={n}>
-            <span className="lk-stepx-n">{n}</span>
-            <span className="lk-stepx-name">{name}</span>
-            <span className="lk-stepx-status">{status}</span>
+          <div className="lk-step-tile" key={n}>
+            <span className="lk-step-tile-n">{n}</span>
+            <span className="lk-step-tile-name">{name}</span>
+            <span className="lk-step-tile-scope">{status}</span>
           </div>
         ))}
       </motion.div>
@@ -29,7 +29,6 @@ export default function LeftSection({ reduced }) {
           <span key={t}>{t}</span>
         ))}
       </motion.p>
-      <motion.p className="lk-panel-note" variants={item}>Edit, duplicate and export any quote whenever you need it.</motion.p>
     </SideSection>
   )
 }

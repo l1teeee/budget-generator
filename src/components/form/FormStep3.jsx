@@ -8,6 +8,7 @@ import StepNav from './StepNav'
 
 const SYMBOLS = { USD: '$', EUR: '\u20ac', MXN: '$', GBP: '\u00a3' }
 const fmt = (n) => Number(n).toLocaleString('en-US', { maximumFractionDigits: 0 })
+const SOFT_BORDER = 'rgba(92,99,122,0.24)'
 
 function PctInput({ label, value, onChange }) {
   return (
@@ -27,7 +28,7 @@ function PctInput({ label, value, onChange }) {
         alignItems: 'center',
         gap: '6px',
         background: '#FCFBF8',
-        border: '1.5px solid rgba(22,22,29,0.18)',
+        border: `1.5px solid ${SOFT_BORDER}`,
         borderRadius: '999px',
         padding: '9px 16px',
       }}>
@@ -108,7 +109,7 @@ export default function FormStep3() {
               marginBottom: '12px',
               padding: '0 16px',
               background: '#F6F4EE',
-              border: '1.5px solid rgba(22,22,29,0.18)',
+              border: `1.5px solid ${SOFT_BORDER}`,
               borderRadius: '999px',
               fontSize: '14px',
               color: '#16161D',
@@ -184,7 +185,7 @@ export default function FormStep3() {
         </div>
 
         {canProceed && (
-          <div data-animate style={{ position: 'sticky', bottom: 0, marginTop: '24px', background: '#FCFBF8', border: '1.5px solid #16161D', borderRadius: '16px', padding: '16px 18px' }}>
+          <div data-animate style={{ position: 'sticky', bottom: 0, marginTop: '24px', background: '#FCFBF8', border: `1.5px solid ${SOFT_BORDER}`, borderRadius: '16px', padding: '16px 18px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 0' }}>
               <span style={sub}>subtotal</span>
               <span style={subVal}>{symbol}{fmt(totals.subtotal)}</span>

@@ -1,6 +1,8 @@
 import { useFormStore } from '../../hooks/useFormStore'
 import TerminalField from '../ui/TerminalField'
 
+const SOFT_BORDER = 'rgba(92,99,122,0.24)'
+
 export default function BrandDrawer({ open, onClose }) {
   const { state, update, resetQuote } = useFormStore()
   if (!open) return null
@@ -21,7 +23,7 @@ export default function BrandDrawer({ open, onClose }) {
           height: '100%',
           overflowY: 'auto',
           background: '#FCFBF8',
-          borderLeft: '1.5px solid #16161D',
+          borderLeft: `1px solid ${SOFT_BORDER}`,
           padding: '28px',
         }}
       >

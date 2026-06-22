@@ -3,6 +3,9 @@ import { useFormStore } from '../../hooks/useFormStore'
 import { quoteToJsonString, parseQuoteJson, formatJsonString, downloadJson } from '../../lib/quoteJson'
 import { getQuoteCompleteness } from '../../lib/quoteCompleteness'
 
+const ACTIVE_BORDER = '#7E98F2'
+const SOFT_BORDER = 'rgba(92,99,122,0.24)'
+
 function PanelButton({ onClick, children, solid = false }) {
   return (
     <button
@@ -17,7 +20,7 @@ function PanelButton({ onClick, children, solid = false }) {
         borderRadius: '999px',
         color: solid ? '#F1EFE9' : '#16161D',
         background: solid ? '#16161D' : '#FCFBF8',
-        border: `1.5px solid ${solid ? '#16161D' : 'rgba(22,22,29,0.22)'}`,
+        border: `1.5px solid ${solid ? 'transparent' : SOFT_BORDER}`,
       }}
       onMouseEnter={e => {
         if (solid) {
@@ -26,7 +29,7 @@ function PanelButton({ onClick, children, solid = false }) {
         }
         else {
           e.currentTarget.style.background = '#F6F4EE'
-          e.currentTarget.style.borderColor = '#16161D'
+          e.currentTarget.style.borderColor = ACTIVE_BORDER
         }
       }}
       onMouseLeave={e => {
@@ -36,7 +39,7 @@ function PanelButton({ onClick, children, solid = false }) {
         }
         else {
           e.currentTarget.style.background = '#FCFBF8'
-          e.currentTarget.style.borderColor = 'rgba(22,22,29,0.22)'
+          e.currentTarget.style.borderColor = SOFT_BORDER
         }
       }}
     >
@@ -126,7 +129,7 @@ export default function JsonPanel({ open, onClose }) {
           display: 'flex',
           flexDirection: 'column',
           background: '#FCFBF8',
-          border: '1.5px solid #16161D',
+          border: `1.5px solid ${SOFT_BORDER}`,
           borderRadius: '16px',
           overflow: 'hidden',
         }}
@@ -185,11 +188,11 @@ export default function JsonPanel({ open, onClose }) {
             <span
               onMouseEnter={e => {
                 e.currentTarget.style.background = '#F6F4EE'
-                e.currentTarget.style.borderColor = '#16161D'
+                e.currentTarget.style.borderColor = ACTIVE_BORDER
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.background = '#FCFBF8'
-                e.currentTarget.style.borderColor = 'rgba(22,22,29,0.22)'
+                e.currentTarget.style.borderColor = SOFT_BORDER
               }}
               style={{
                 cursor: 'pointer',
@@ -202,7 +205,7 @@ export default function JsonPanel({ open, onClose }) {
                 borderRadius: '999px',
                 color: '#16161D',
                 background: '#FCFBF8',
-                border: '1.5px solid rgba(22,22,29,0.22)',
+                border: `1.5px solid ${SOFT_BORDER}`,
               }}
             >
               load file

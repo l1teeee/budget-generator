@@ -15,7 +15,7 @@ export default function StepProgress() {
   const fillRef = useRef(null)
   const completeness = getQuoteCompleteness(state)
   const current = STEPS.find((item) => item.n === step)
-  useProgressFill(fillRef, completeness.percent / 100)
+  useProgressFill(fillRef, step / STEPS.length)
 
   return (
     <div className="step-rail" aria-label="Budget progress">
