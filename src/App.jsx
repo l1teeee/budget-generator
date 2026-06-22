@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 import { FormProvider, useFormStore } from './hooks/useFormStore'
 import { usePageNav } from './hooks/usePageNav'
 import HomePage from './components/home/HomePage'
@@ -12,7 +12,6 @@ import IntakeReview from './components/intake/IntakeReview'
 import ExportsPage from './components/exports/ExportsPage'
 import { getQuoteCompleteness } from './lib/quoteCompleteness'
 import { mergeQuoteDraft } from './lib/intakeMapper'
-import { loadExports } from './lib/exportHistory'
 
 function IntakeFlow({ onHome, onWizard }) {
   const { state, applyQuoteDraft, setStep } = useFormStore()
@@ -92,14 +91,7 @@ function AppRoutes() {
   return (
     <PageTransition key={location.pathname}>
       <Routes>
-        <Route
-          path="/"
-          element={
-            loadExports().length > 0
-              ? <Navigate to="/exports" replace />
-              : <HomePage onStart={() => goTo('/intake')} />
-          }
-        />
+        <Route path="/" element={<HomePage onStart={() => goTo('/exports')} onJson={() => goTo('/intake')} />} />
         <Route path="/intake" element={<IntakeFlow onHome={() => goTo('/')} onWizard={() => goTo('/wizard')} />} />
         <Route path="/wizard" element={<FullScreenWizard onHome={() => goTo('/')} />} />
         <Route path="/exports" element={<ExportsPage onHome={() => goTo('/')} onNewQuote={() => goTo('/intake')} />} />

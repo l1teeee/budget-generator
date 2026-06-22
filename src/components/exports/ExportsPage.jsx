@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { flushSync } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { useFormStore } from '../../hooks/useFormStore'
 import { deleteExport, loadExports } from '../../lib/exportHistory'
@@ -78,12 +79,15 @@ function ExportCard({ entry, onEdit, onDelete }) {
 
 export default function ExportsPage({ onHome, onNewQuote }) {
   const [exportsList, setExportsList] = useState(() => loadExports())
-  const { replaceQuote } = useFormStore()
+  const { replaceQuote, setStep } = useFormStore()
   const navigate = useNavigate()
   const count = exportsList.length
 
   const editEntry = (entry) => {
-    replaceQuote(entry.snapshot)
+    flushSync(() => {
+      replaceQuote(entry.snapshot)
+      setStep(1)
+    })
     navigate('/wizard')
   }
 

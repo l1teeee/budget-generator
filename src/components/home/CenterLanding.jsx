@@ -17,7 +17,8 @@ const MOCK_LINES = [
   ['AI Integration', '$1,500'],
 ]
 
-export default function CenterLanding({ onStart }) {
+export default function CenterLanding({ onStart, onJson }) {
+  const handleJson = onJson || onStart
   const root = useRef(null)
   useHomeAnimations(root)
 
@@ -39,7 +40,7 @@ export default function CenterLanding({ onStart }) {
             BudgetFlow AI
           </button>
           <div className="lk-nav-actions">
-            <button type="button" className="lk-btn lk-btn-ghost lk-nav-json" onClick={onStart}>JSON</button>
+            <button type="button" className="lk-btn lk-btn-ghost lk-nav-json" onClick={handleJson}>JSON</button>
             <button type="button" className="lk-btn lk-btn-primary lk-nav-start" onClick={onStart}>Start</button>
           </div>
         </nav>
@@ -62,7 +63,7 @@ export default function CenterLanding({ onStart }) {
             <button type="button" className="lk-btn lk-btn-primary lk-btn-hero" onClick={onStart}>
               Start your budget
             </button>
-            <button type="button" className="lk-btn lk-btn-ghost lk-btn-lg" onClick={onStart}>
+            <button type="button" className="lk-btn lk-btn-ghost lk-btn-lg" onClick={handleJson}>
               Import JSON
             </button>
           </div>
