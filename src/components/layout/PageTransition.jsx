@@ -3,7 +3,9 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 
 function prefersReduced() {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  return typeof window !== 'undefined'
+    && typeof window.matchMedia === 'function'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
 export default function PageTransition({ children }) {
@@ -14,17 +16,18 @@ export default function PageTransition({ children }) {
     if (!el) return
 
     if (prefersReduced()) {
-      gsap.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.15, ease: 'none', clearProps: 'all' })
+      gsap.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.12, ease: 'none', clearProps: 'all' })
       return
     }
 
     gsap.fromTo(
       el,
-      { opacity: 0, y: 14 },
+      { opacity: 0, y: 12, filter: 'blur(6px)' },
       {
         opacity: 1,
         y: 0,
-        duration: 0.38,
+        filter: 'blur(0px)',
+        duration: 0.26,
         ease: 'power3.out',
         clearProps: 'all',
       }

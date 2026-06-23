@@ -672,6 +672,11 @@ button:not(:disabled):active,
   font-family: 'Hanken Grotesk', Inter, system-ui, sans-serif;
 }
 
+.intake-screen-frame {
+  min-height: 100vh;
+  transform-origin: 50% 24px;
+}
+
 .intake-nav {
   width: min(1080px, 100%);
   min-height: 68px;
@@ -785,11 +790,22 @@ button:not(:disabled):active,
   border: 1.5px solid var(--border-panel);
   border-radius: var(--r-xl);
   box-shadow: var(--shadow-card);
+  transform: translateY(0);
   transition:
+    transform 190ms var(--ease-out),
     background-color 190ms ease,
     border-color 190ms ease,
     box-shadow 220ms ease,
     color 160ms ease;
+}
+
+.intake-card:not(:disabled) {
+  transition:
+    transform 190ms var(--ease-out),
+    background-color 190ms ease,
+    border-color 190ms ease,
+    box-shadow 220ms ease,
+    color 160ms ease !important;
 }
 
 .intake-card-primary {
@@ -822,6 +838,10 @@ button:not(:disabled):active,
 
 .intake-card-primary .intake-card-body {
   color: #F1EFE9;
+}
+
+.intake-card:active {
+  transform: translateY(-1px) scale(0.99);
 }
 
 .intake-workbench {
@@ -1150,6 +1170,8 @@ button:not(:disabled):active,
 
   .intake-card:hover {
     border-color: var(--border-active);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
   }
 
   .intake-card:not(.intake-card-primary):hover {
@@ -1371,6 +1393,7 @@ button:not(:disabled):active,
   [data-link-card]:hover,
   [data-link-card]:active,
   .intake-card:hover,
+  .intake-card:active,
   .step-button:hover .step-number {
     transform: none !important;
     filter: none !important;

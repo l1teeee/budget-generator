@@ -107,6 +107,27 @@
   border-radius: 10px 10px 0 0;
 }
 
+.exp-preview-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #16161D;
+  background: rgba(241,239,233,0.72);
+  opacity: 0;
+  transition: opacity 160ms ease;
+  pointer-events: none;
+}
+
+.exp-preview-wrap:hover .exp-preview-hint {
+  opacity: 1;
+}
+
 .exp-preview-doc {
   position: absolute;
   top: 0;
@@ -204,6 +225,46 @@
   transform: translateY(0);
 }
 
+/* ── Template switcher on card ── */
+.exp-card-template-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.exp-card-tpl-pill {
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(22, 22, 29, 0.12);
+  background: transparent;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8A8794;
+  cursor: pointer;
+  transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease;
+}
+
+.exp-card-tpl-pill:hover {
+  border-color: rgba(22, 22, 29, 0.26);
+  color: #565563;
+}
+
+.exp-card-tpl-pill.is-active {
+  background: #16161D;
+  color: #AEC2FF;
+  border-color: transparent;
+}
+
+/* ── Sidebar divider ── */
+.exp-sidebar-divider {
+  height: 1px;
+  background: rgba(22, 22, 29, 0.08);
+  margin: 8px 0;
+}
+
 /* ── Action buttons ── */
 .exp-btn-edit {
   flex: 1;
@@ -227,20 +288,67 @@
   transform: scale(0.95);
 }
 
+.exp-btn-pdf {
+  min-height: 36px;
+  padding: 0 14px;
+  background: transparent;
+  color: #565563;
+  border: 1.5px solid rgba(22, 22, 29, 0.14);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+
+.exp-btn-pdf:hover {
+  color: #16161D;
+  border-color: rgba(22, 22, 29, 0.30);
+}
+
+.exp-btn-pdf:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.exp-btn-dup {
+  min-height: 36px;
+  padding: 0 14px;
+  background: transparent;
+  color: #565563;
+  border: 1.5px solid rgba(22, 22, 29, 0.14);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease;
+}
+
+.exp-btn-dup:hover {
+  background: rgba(174, 194, 255, 0.15);
+  color: #16161D;
+  border-color: #AEC2FF;
+}
+
 .exp-btn-del {
   min-height: 36px;
-  padding: 0 16px;
+  padding: 0 12px;
   background: transparent;
   color: #8A8794;
   border: 1.5px solid rgba(22, 22, 29, 0.14);
   border-radius: 999px;
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   cursor: pointer;
   transition:
     color 160ms ease,
     border-color 160ms ease;
-  letter-spacing: 0.02em;
 }
 
 .exp-btn-del:hover {
@@ -315,6 +423,138 @@
 .exp-btn-primary:active {
   transform: scale(0.97);
   box-shadow: none;
+}
+
+/* ── Wizard Modal Overlay ── */
+.exp-wizard-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #F1EFE9;
+  display: flex;
+  flex-direction: column;
+}
+
+.exp-wizard-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  z-index: 210;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(22, 22, 29, 0.14);
+  background: #FCFBF8;
+  color: #565563;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease;
+}
+
+.exp-wizard-close:hover {
+  background: #fff1f3;
+  color: #9E3F39;
+  border-color: #f1c9d0;
+}
+
+/* ── Brand Presets ── */
+.exp-brands {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.exp-brands-label {
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8A8794;
+  padding: 0 4px;
+  margin-bottom: 2px;
+}
+
+.exp-brands-save {
+  font-size: 11px;
+  font-weight: 800;
+  color: #565563;
+  background: none;
+  border: 1px solid rgba(22, 22, 29, 0.14);
+  border-radius: 999px;
+  padding: 7px 12px;
+  cursor: pointer;
+  text-align: left;
+  letter-spacing: 0.02em;
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+.exp-brands-save:hover {
+  background: rgba(22, 22, 29, 0.04);
+  color: #16161D;
+}
+
+.exp-brands-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.exp-brands-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.exp-brands-apply {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 800;
+  color: #16161D;
+  background: none;
+  border: none;
+  padding: 6px 4px;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-radius: 6px;
+  transition: background-color 140ms ease;
+}
+
+.exp-brands-apply:hover {
+  background: rgba(174, 194, 255, 0.20);
+}
+
+.exp-brands-del {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  border: none;
+  background: none;
+  color: #8A8794;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+.exp-brands-del:hover {
+  background: #fff1f3;
+  color: #9E3F39;
 }
 
 /* ── Ghost button (sidebar) ── */
